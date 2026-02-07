@@ -19,6 +19,12 @@ Claude Code plugin packaging five skills and a macOS Shortcuts MCP server. Synce
 
 `CLAUDE_PLUGIN_ROOT` is set automatically by Claude Code at install time. During local development it is unset — `/doctor` warnings about missing env vars are expected and not a bug. The variable works in JSON configs (`.mcp.json`, `hooks.json`) but has a known bug in command markdown files ([#9354](https://github.com/anthropics/claude-code/issues/9354)).
 
+## Known Marketplace Bugs
+
+- Schema URL 404 — `$schema` in marketplace.json doesn't resolve ([#9686](https://github.com/anthropics/claude-code/issues/9686))
+- Submodules not cloned during marketplace install ([#17293](https://github.com/anthropics/claude-code/issues/17293)) — not an issue here since plugin ships flat copies
+- Reserved names blocked: `claude-code-marketplace`, `claude-plugins-official`, `anthropic-marketplace`, `anthropic-plugins`, `agent-skills`, `life-sciences`
+
 ## Structure Notes
 
 - Plugin installation is marketplace-only — no direct `claude plugin add` path exists
