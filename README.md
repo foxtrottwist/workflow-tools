@@ -44,6 +44,14 @@ cd plugins/workflow-tools
 - Installing production-only dependencies
 - Cleaning test files and lockfiles from the dist
 
+### Local testing
+
+```bash
+claude --plugin-dir .
+```
+
+Running `/doctor` during local development will show a warning about `CLAUDE_PLUGIN_ROOT` being missing. This is expected — Claude Code sets that variable automatically at install time. The warning does not appear for end users after `claude plugin add`.
+
 ### Structure
 
 ```
