@@ -28,6 +28,7 @@ for skill in "${SKILLS[@]}"; do
     --exclude='.github' \
     --exclude='.DS_Store' \
     --exclude='README.md' \
+    --exclude='LICENSE' \
     --exclude='*-analysis.md' \
     "$SKILLS_SRC/$skill/" "$SKILLS_DEST/$skill/"
 done
