@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "shortcuts": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp-servers/shortcuts-mcp/dist/server.js"]
+    }
+  }
+}

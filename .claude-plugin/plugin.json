@@ -1,0 +1,10 @@
+{
+  "name": "workflow-tools",
+  "version": "0.1.0",
+  "description": "Productivity and development workflow toolkit. Task orchestration with verification gates, written communication with quality standards, prompt template development, conversation context migration, and documentation-code alignment auditing. Includes macOS Shortcuts automation via MCP.",
+  "author": {
+    "name": "Law Horne"
+  },
+  "repository": "https://github.com/Foxtrottwist/workflow-tools",
+  "license": "MIT"
+}
