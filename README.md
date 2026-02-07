@@ -20,8 +20,18 @@ A Claude Code plugin bundling five skills and a macOS Shortcuts MCP server for p
 
 ## Install
 
+Add the marketplace and install the plugin:
+
+```
+/plugin marketplace add Foxtrottwist/workflow-tools
+/plugin install workflow-tools@workflow-tools
+```
+
+Or from the CLI:
+
 ```bash
-claude plugin add Foxtrottwist/workflow-tools
+claude plugin marketplace add Foxtrottwist/workflow-tools
+claude plugin install workflow-tools@workflow-tools
 ```
 
 ## Development
@@ -50,13 +60,14 @@ cd plugins/workflow-tools
 claude --plugin-dir .
 ```
 
-Running `/doctor` during local development will show a warning about `CLAUDE_PLUGIN_ROOT` being missing. This is expected — Claude Code sets that variable automatically at install time. The warning does not appear for end users after `claude plugin add`.
+Running `/doctor` during local development will show a warning about `CLAUDE_PLUGIN_ROOT` being missing. This is expected — Claude Code sets that variable automatically at install time. The warning does not appear for end users after installation via the marketplace.
 
 ### Structure
 
 ```
 workflow-tools/
 ├── .claude-plugin/
+│   ├── marketplace.json     # Marketplace catalog
 │   └── plugin.json          # Plugin metadata
 ├── .mcp.json                # MCP server configuration
 ├── skills/

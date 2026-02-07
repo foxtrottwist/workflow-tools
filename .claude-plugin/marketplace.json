@@ -1,0 +1,26 @@
+{
+  "name": "workflow-tools",
+  "description": "Productivity and development workflow toolkit with task orchestration, writing quality standards, prompt development, context migration, code auditing, and macOS Shortcuts automation.",
+  "owner": {
+    "name": "Law Horne"
+  },
+  "plugins": [
+    {
+      "name": "workflow-tools",
+      "description": "Five skills (iter, write, prompt-dev, chat-migration, code-audit) and a macOS Shortcuts MCP server for productivity workflows.",
+      "version": "0.1.0",
+      "source": "./",
+      "repository": "https://github.com/Foxtrottwist/workflow-tools",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": [
+        "workflows",
+        "task-orchestration",
+        "writing",
+        "prompt-development",
+        "documentation-audit",
+        "macos-shortcuts"
+      ]
+    }
+  ]
+}

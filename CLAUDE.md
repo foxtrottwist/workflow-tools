@@ -13,7 +13,7 @@ Claude Code plugin packaging five skills and a macOS Shortcuts MCP server. Synce
 
 ## Plugin Validation
 
-No official `claude plugin validate` command exists. `build.sh` is the validation layer. It checks for `.claude-plugin/plugin.json`, `.mcp.json`, skill SKILL.md files, and MCP server artifacts.
+`claude plugin validate .` validates marketplace JSON. `build.sh` is the structural validation layer — checks for `.claude-plugin/plugin.json`, `.mcp.json`, skill SKILL.md files, and MCP server artifacts.
 
 ## Environment
 
@@ -21,6 +21,8 @@ No official `claude plugin validate` command exists. `build.sh` is the validatio
 
 ## Structure Notes
 
+- Plugin installation is marketplace-only — no direct `claude plugin add` path exists
+- `.claude-plugin/marketplace.json` makes the repo a self-listing marketplace (`source: "./"`)
 - Skills live at `skills/<name>/SKILL.md` — must be at plugin root, not inside `.claude-plugin/`
 - MCP config is standalone `.mcp.json` using `${CLAUDE_PLUGIN_ROOT}` for paths
 - `node_modules/` is committed (production deps only) — required for plugin distribution
