@@ -1,7 +1,7 @@
 import deepmerge from "@fastify/deepmerge";
 import { mkdir, readdir, readFile, writeFile } from "fs/promises";
 import path from "path";
-import { isDirectory, isFile, isOlderThan24Hrs } from "./helpers.js";
+import { isDirectory, isDuplicatePurpose, isFile, isOlderThan24Hrs, } from "./helpers.js";
 import { logger } from "./logger.js";
 import { listShortcuts } from "./shortcuts.js";
 /*
@@ -23,6 +23,19 @@ const USER_PROFILE = `${DATA_DIRECTORY}user-profile.json`;
 const EXECUTIONS = `${DATA_DIRECTORY}executions/`;
 const SHORTCUTS_CACHE = `${DATA_DIRECTORY}shortcuts-cache.txt`;
 const STATISTICS = `${DATA_DIRECTORY}statistics.json`;
+export async function enrichShortcutsWithAnnotations(shortcuts) {
+    const profile = await loadUserProfile();
+    if (!profile.annotations)
+        return shortcuts;
+    const enriched = { ...shortcuts };
+    for (const [name, entry] of Object.entries(enriched)) {
+        const annotation = profile.annotations[name];
+        if (annotation?.purposes?.length) {
+            enriched[name] = { ...entry, purposes: annotation.purposes };
+        }
+    }
+    return enriched;
+}
 export async function ensureDataDirectory() {
     try {
         await mkdir(DATA_DIRECTORY, { recursive: true });
@@ -41,20 +54,25 @@ export async function ensureDataDirectory() {
     }
 }
 export async function getShortcutsList() {
-    const timestampPattern = /^Last Updated: <<<(.*?)>>>\n\n/;
     if (await isFile(SHORTCUTS_CACHE)) {
-        const shortcuts = await readFile(SHORTCUTS_CACHE, "utf8");
-        const timestamp = shortcuts.match(timestampPattern)?.[1];
-        if (!isOlderThan24Hrs(timestamp)) {
-            return shortcuts.replace(timestampPattern, "");
+        try {
+            const raw = await readFile(SHORTCUTS_CACHE, "utf8");
+            const cache = JSON.parse(raw);
+            if (!isOlderThan24Hrs(cache.timestamp)) {
+                return await enrichShortcutsWithAnnotations(cache.shortcuts);
+            }
+        }
+        catch {
+            logger.info("Cache unreadable, refreshing");
         }
     }
     logger.info("Refreshing shortcuts cache");
     await ensureDataDirectory();
-    const timestamp = `Last Updated: <<<${new Date().toISOString()}>>>\n\n`;
-    const shortcuts = await listShortcuts();
-    await writeFile(SHORTCUTS_CACHE, timestamp + shortcuts);
-    return shortcuts;
+    const cliOutput = await listShortcuts();
+    const shortcuts = parseShortcutsList(cliOutput);
+    const cache = { shortcuts, timestamp: new Date().toISOString() };
+    await writeFile(SHORTCUTS_CACHE, JSON.stringify(cache));
+    return await enrichShortcutsWithAnnotations(shortcuts);
 }
 export function getSystemState() {
     return {
@@ -112,6 +130,16 @@ export async function loadStatistics() {
 export async function loadUserProfile() {
     return await load(USER_PROFILE, {});
 }
+export function parseShortcutsList(cliOutput) {
+    const map = {};
+    for (const line of cliOutput.split("\n")) {
+        const match = line.match(/^(.+?)\s+\(([^)]+)\)\s*$/);
+        if (match) {
+            map[match[1]] = { id: match[2] };
+        }
+    }
+    return map;
+}
 export async function recordExecution({ duration = 0, shortcut = "null", success = false, }) {
     const timestamp = new Date().toISOString();
     const dateString = timestamp.split("T")[0]; // "2025-08-02"
@@ -127,6 +155,25 @@ export async function recordExecution({ duration = 0, shortcut = "null", success
     executions.push(execution);
     await writeFile(filePath, JSON.stringify(executions));
     logger.debug({ shortcut, success }, "Execution recorded");
+}
+const PURPOSE_CAP = 8;
+export async function recordPurpose({ purpose, shortcut, }) {
+    const profile = await loadUserProfile();
+    const annotation = profile.annotations?.[shortcut] ?? { purposes: [] };
+    if (isDuplicatePurpose(purpose, annotation.purposes)) {
+        logger.debug({ purpose, shortcut }, "Duplicate purpose, skipping");
+        return;
+    }
+    annotation.purposes.push(purpose);
+    if (annotation.purposes.length > PURPOSE_CAP) {
+        annotation.purposes = annotation.purposes.slice(-PURPOSE_CAP);
+    }
+    profile.annotations = {
+        ...profile.annotations,
+        [shortcut]: { purposes: annotation.purposes },
+    };
+    await writeFile(USER_PROFILE, JSON.stringify(profile));
+    logger.debug({ purpose, shortcut }, "Purpose recorded");
 }
 export async function saveStatistics(data) {
     data.generatedAt = new Date().toISOString();

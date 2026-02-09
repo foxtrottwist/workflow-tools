@@ -39,6 +39,10 @@ export async function isDirectory(path) {
         .then((res) => res.isDirectory())
         .catch(() => false);
 }
+export function isDuplicatePurpose(newPurpose, existing) {
+    const normalized = normalizePurpose(newPurpose);
+    return existing.some((p) => normalizePurpose(p) === normalized);
+}
 /**
  * Type guard to check if an error is an ExecException with stderr/stdout properties.
  *
@@ -91,6 +95,21 @@ export function isOlderThan24Hrs(timestamp) {
         ts = new Date(timestamp.trim()).getTime();
     }
     return !isNaN(ts) && new Date().getTime() - ts > 24 * 60 * 60 * 1000;
+}
+export function normalizePurpose(purpose) {
+    return purpose.toLowerCase().trim().replace(/\s+/g, " ");
+}
+export function resolveShortcutName(name, shortcuts) {
+    if (name in shortcuts) {
+        return { canonical: name, resolved: false };
+    }
+    const lower = name.toLowerCase();
+    for (const key of Object.keys(shortcuts)) {
+        if (key.toLowerCase() === lower) {
+            return { canonical: key, resolved: true };
+        }
+    }
+    return { canonical: name, resolved: false };
 }
 /**
  * Escapes a string for safe use in shell commands by wrapping in single quotes.

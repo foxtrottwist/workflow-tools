@@ -1,9 +1,9 @@
 import { FastMCP } from "fastmcp";
 import { z } from "zod";
-import { getVersion } from "./helpers.js";
+import { getVersion, resolveShortcutName } from "./helpers.js";
 import { logger } from "./logger.js";
 import { requestStatistics } from "./sampling.js";
-import { getShortcutsList, getSystemState, loadUserProfile, saveUserProfile, } from "./shortcuts-usage.js";
+import { getShortcutsList, getSystemState, loadUserProfile, recordPurpose, saveUserProfile, } from "./shortcuts-usage.js";
 import { runShortcut, viewShortcut } from "./shortcuts.js";
 const server = new FastMCP({
     name: "Shortcuts",
@@ -15,20 +15,27 @@ server.addTool({
         readOnlyHint: false,
         title: "Run Shortcut",
     },
-    description: "Execute a macOS Shortcut by name with optional input. Supports all shortcut types including interactive workflows.",
+    description: "Execute a macOS Shortcut by name with optional input. Names resolve case-insensitively. If unsure which shortcut to run, call shortcuts_usage with resources: ['shortcuts'] to browse available shortcuts with purpose annotations. Error 1743 means the user must grant automation access in System Settings > Privacy & Security > Automation.",
     async execute(args, { log }) {
-        const { input, name } = args;
+        const { input, name, purpose } = args;
+        const shortcuts = await getShortcutsList();
+        const { canonical, resolved } = resolveShortcutName(name, shortcuts);
         log.info("Tool execution started", {
             hasInput: !!input,
-            shortcut: name,
+            resolved,
+            shortcut: canonical,
             tool: "run_shortcut",
         });
+        let text = await runShortcut(canonical, input);
+        if (resolved) {
+            text = `[Resolved "${name}" -> "${canonical}"]\n${text}`;
+        }
+        if (purpose) {
+            await recordPurpose({ purpose, shortcut: canonical });
+        }
         return {
             content: [
-                {
-                    text: await runShortcut(args.name, args.input),
-                    type: "text",
-                },
+                { text, type: "text" },
                 {
                     resource: await server.embedded("context://system/current"),
                     type: "resource",
@@ -43,6 +50,10 @@ server.addTool({
             .optional()
             .describe("Optional input to pass to the shortcut"),
         name: z.string().describe("The name of the Shortcut to run"),
+        purpose: z
+            .string()
+            .optional()
+            .describe("Always include. Brief phrase describing the user's goal (e.g. 'check weather forecast', 'start focus timer'). Builds annotations that make shortcuts discoverable across sessions."),
     }),
 });
 server.addTool({
@@ -51,7 +62,7 @@ server.addTool({
         readOnlyHint: false,
         title: "Shortcuts Usage & Analytics",
     },
-    description: "Access shortcut usage history, execution patterns, and user preferences. Use for usage analysis, troubleshooting, and storing user preferences.",
+    description: "Access shortcut usage history, execution patterns, and user preferences. Before asking the user which shortcut to use, load the shortcuts resource (resources: ['shortcuts']) — entries with 'purposes' describe what shortcuts do, enabling intent matching without prompting.",
     async execute(args, { log }) {
         const { action, data = {}, resources = [] } = args;
         log.info("Shortcuts usage operation started", {
@@ -106,6 +117,9 @@ server.addTool({
         action: z.enum(["read", "update"]),
         data: z
             .object({
+            annotations: z
+                .record(z.object({ purposes: z.array(z.string()) }))
+                .optional(),
             context: z
                 .object({
                 "current-projects": z.array(z.string()).optional(),
@@ -123,7 +137,7 @@ server.addTool({
         resources: z
             .array(z.enum(["profile", "shortcuts", "statistics"]))
             .optional()
-            .describe("Contextual resources to include. Consider time elapsed and conversation needs: 'shortcuts' for discovery/validation, 'recents' for troubleshooting/patterns, 'profile' for personalized recommendations."),
+            .describe("Contextual resources to include. 'shortcuts' for available shortcuts with purpose annotations, 'profile' for user preferences and workflow patterns, 'statistics' for execution analytics."),
     }),
 });
 server.addTool({
@@ -132,7 +146,7 @@ server.addTool({
         readOnlyHint: true,
         title: "View Shortcut",
     },
-    description: "Open a macOS Shortcut in the Shortcuts editor for viewing or editing.",
+    description: "Open a macOS Shortcut in the Shortcuts editor for viewing or editing. Use for shortcuts requiring interactive UI (file pickers, dialogs, prompts) since MCP cannot display their interface.",
     async execute(args) {
         return String(await viewShortcut(args.name));
     },
@@ -142,13 +156,14 @@ server.addTool({
     }),
 });
 server.addResource({
-    description: "Available shortcuts with names and identifiers for discovery and validation.",
+    description: "JSON map of available shortcuts keyed by name, each with an ID and optional 'purposes' array from prior usage. Cache refreshes every 24 hours.",
     async load() {
+        const shortcuts = await getShortcutsList();
         return {
-            text: await getShortcutsList(),
+            text: JSON.stringify(shortcuts, null, 2),
         };
     },
-    mimeType: "text/plain",
+    mimeType: "application/json",
     name: "Current shortcuts list",
     uri: "shortcuts://available",
 });

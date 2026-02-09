@@ -15,3 +15,7 @@ dist/
 
 # Claude state (should not be committed)
 .claude/
+
+# Skill artifacts
+*.local
+*.local.*
