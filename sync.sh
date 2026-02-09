@@ -57,8 +57,12 @@ cp "$MCP_SRC/package.json" "$MCP_DEST/package.json"
 # Remove test files from dist
 find "$MCP_DEST/dist" -name '*.test.js' -delete
 
-# Install production deps only in the plugin copy
-(cd "$MCP_DEST" && pnpm install --prod --ignore-scripts 2>/dev/null)
+# Install production deps with npm for a flat, portable node_modules.
+# pnpm creates relative symlinks that work correctly, but Claude Code's plugin
+# cache resolves them to absolute paths pointing back to the marketplace directory.
+# When the marketplace updates (transitive dep version bumps), those absolute
+# paths go stale and the server fails to start. npm's flat layout avoids this.
+(cd "$MCP_DEST" && npm install --omit=dev --ignore-scripts --no-audit --no-fund 2>/dev/null)
 
 # Remove lockfile from plugin copy
 rm -f "$MCP_DEST/pnpm-lock.yaml" "$MCP_DEST/package-lock.json"
