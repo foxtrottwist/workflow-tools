@@ -4,7 +4,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS=(iter write prompt-dev chat-migration code-audit)
+SKILLS=(iter write prompt-dev chat-migration code-audit azure-devops)
 SKILLS_SRC="$SCRIPT_DIR/../../skills"
 SKILLS_DEST="$SCRIPT_DIR/skills"
 MCP_SRC="$SCRIPT_DIR/../../mcp-servers/shortcuts-mcp"
@@ -32,6 +32,21 @@ for skill in "${SKILLS[@]}"; do
     --exclude='*-analysis.md' \
     "$SKILLS_SRC/$skill/" "$SKILLS_DEST/$skill/"
 done
+
+# --- skill-creator (external, Apache 2.0) ---
+SKILL_CREATOR_SRC="$SCRIPT_DIR/../../external/anthropic-skills/skills/skill-creator"
+if [ ! -d "$SKILL_CREATOR_SRC" ]; then
+  echo "ERROR: skill-creator not found: $SKILL_CREATOR_SRC"
+  exit 1
+fi
+
+echo "  Syncing skill: skill-creator (external)"
+rsync -a --delete \
+  --exclude='.git' \
+  --exclude='.github' \
+  --exclude='.DS_Store' \
+  --exclude='README.md' \
+  "$SKILL_CREATOR_SRC/" "$SKILLS_DEST/skill-creator/"
 
 # --- MCP Server (build + copy artifacts) ---
 if [ ! -d "$MCP_SRC" ]; then
@@ -80,6 +95,12 @@ for skill in "${SKILLS[@]}"; do
     exit 1
   fi
 done
+if [ -f "$SKILLS_DEST/skill-creator/SKILL.md" ]; then
+  echo "  + skill-creator (external, Apache 2.0)"
+else
+  echo "  ! skill-creator (MISSING SKILL.md)"
+  exit 1
+fi
 echo ""
 echo "MCP Servers:"
 if [ -f "$MCP_DEST/dist/server.js" ]; then

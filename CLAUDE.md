@@ -2,7 +2,7 @@
 
 ## Overview
 
-Claude Code plugin packaging five skills and a macOS Shortcuts MCP server. Synced from the workflow-systems monorepo — this repo holds distributable copies, not canonical sources.
+Claude Code plugin packaging seven skills and a macOS Shortcuts MCP server. Synced from the workflow-systems monorepo — this repo holds distributable copies, not canonical sources.
 
 ## Key Commands
 

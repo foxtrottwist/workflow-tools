@@ -1,0 +1,21 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Distribution
+dist/
+*.skill
+
+# Claude state (should not be committed)
+.claude/
+
+# Skill artifacts
+*.local
+*.local.*

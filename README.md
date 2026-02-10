@@ -1,6 +1,6 @@
 # workflow-tools
 
-A Claude Code plugin bundling five skills and a macOS Shortcuts MCP server for productivity workflows.
+A Claude Code plugin bundling seven skills and a macOS Shortcuts MCP server for productivity workflows.
 
 ## What's included
 
@@ -13,6 +13,8 @@ A Claude Code plugin bundling five skills and a macOS Shortcuts MCP server for p
 | [**prompt-dev**](https://github.com/foxtrottwist/prompt-dev) | `/prompt-dev`, "create a prompt", "build a template" | Prompt template development following Claude 4 conventions. Iterative DISCOVER → DRAFT → TEST → REFINE → VALIDATE workflow. |
 | [**chat-migration**](https://github.com/foxtrottwist/chat-migration) | `/chat-migration`, "save context", "hitting context limit" | Captures conversation context into structured handoff documents for seamless continuation in a new chat. |
 | [**code-audit**](https://github.com/foxtrottwist/code-audit) | `/code-audit`, "verify documentation", "check docs match code" | Documentation-code alignment verification using parallel subagents. Finds stale docs, drift, and inaccuracies. |
+| [**azure-devops**](https://github.com/foxtrottwist/azure-devops) | "review PR", "PR comments", "az repos", "az devops" | Azure DevOps CLI recipes for PR operations — threads, comments, votes, diffs via `az repos` and `az devops invoke`. |
+| **skill-creator** | "create a skill", "build a new skill" | Skill creation framework with progressive disclosure patterns, bundled resource planning, and packaging scripts. *Originally by Anthropic (Apache 2.0).* |
 
 ### MCP Server
 
@@ -75,7 +77,9 @@ workflow-tools/
 │   ├── write/
 │   ├── prompt-dev/
 │   ├── chat-migration/
-│   └── code-audit/
+│   ├── code-audit/
+│   ├── azure-devops/
+│   └── skill-creator/       # Anthropic, Apache 2.0
 ├── mcp-servers/
 │   └── shortcuts-mcp/
 │       ├── dist/            # Compiled server
@@ -85,6 +89,10 @@ workflow-tools/
 ├── build.sh                 # Validate structure
 └── LICENSE
 ```
+
+## Attribution
+
+**skill-creator** is derived from [anthropic-skills](https://github.com/anthropics/anthropic-skills) by Anthropic, licensed under the Apache License 2.0. See `skills/skill-creator/LICENSE.txt` for the full license text.
 
 ## License
 
