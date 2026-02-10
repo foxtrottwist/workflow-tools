@@ -14,7 +14,7 @@ A Claude Code plugin bundling seven skills and a macOS Shortcuts MCP server for 
 | [**chat-migration**](https://github.com/foxtrottwist/chat-migration) | `/chat-migration`, "save context", "hitting context limit" | Captures conversation context into structured handoff documents for seamless continuation in a new chat. |
 | [**code-audit**](https://github.com/foxtrottwist/code-audit) | `/code-audit`, "verify documentation", "check docs match code" | Documentation-code alignment verification using parallel subagents. Finds stale docs, drift, and inaccuracies. |
 | [**azure-devops**](https://github.com/foxtrottwist/azure-devops) | "review PR", "PR comments", "az repos", "az devops" | Azure DevOps CLI recipes for PR operations — threads, comments, votes, diffs via `az repos` and `az devops invoke`. |
-| **skill-creator** | "create a skill", "build a new skill" | Skill creation framework with progressive disclosure patterns, bundled resource planning, and packaging scripts. *Originally by Anthropic (Apache 2.0).* |
+| **skill-creator** | "create a skill", "build a new skill" | Anthropic's skill creation guide, synced from [anthropic-skills](https://github.com/anthropics/anthropic-skills) (Apache 2.0). |
 
 ### MCP Server
 
