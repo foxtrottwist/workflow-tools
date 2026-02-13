@@ -4,7 +4,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS=(iter write prompt-dev chat-migration code-audit azure-devops)
+SKILLS=(iter writing prompt-dev chat-migration code-audit azure-devops)
 SKILLS_SRC="$SCRIPT_DIR/../../skills"
 SKILLS_DEST="$SCRIPT_DIR/skills"
 MCP_SRC="$SCRIPT_DIR/../../mcp-servers/shortcuts-mcp"

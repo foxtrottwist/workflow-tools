@@ -1,9 +1,9 @@
 ---
-name: write
+name: writing
 description: Written communication with quality standards. Handles message composition (emails, texts, notes), proofreading, and professional content creation. Supports saving reusable snippets for future use. Triggers on "write", "compose", "draft", "proofread", "fix grammar", "help me say", "save this phrase", or requests to create professional content.
 ---
 
-# Write
+# Writing
 
 Written communication following quality standards. Three paths based on task complexity.
 
@@ -11,7 +11,7 @@ Written communication following quality standards. Three paths based on task com
 
 Every invocation, check for existing state in `.writing.local/`.
 
-**If state exists**, read `state.json` and offer to resume or start fresh.
+**If state exists**, read `state.json` and use **AskUserQuestion** to offer resume or start fresh — include the content type and current phase as context so the user knows what they're resuming.
 
 **If no state**, proceed to Discover.
 
@@ -22,7 +22,7 @@ Infer path from request language:
 - "email", "text", "note", "message", "reply" → **Compose Message**
 - "LinkedIn", "cover letter", "blog", "bio", "article" → **Create Content**
 
-Infer tone from relationship context (professional, colleague, casual). Use **AskUserQuestion** only when path or tone is genuinely ambiguous.
+Infer tone from relationship context (professional, colleague, casual). Use **AskUserQuestion** only when path or tone is genuinely ambiguous — for example, "help me write something about my experience" could be a LinkedIn post, cover letter, or blog. Present the likely options with brief descriptions.
 
 ## Path: Compose Message
 
@@ -32,6 +32,8 @@ Infer tone from relationship context (professional, colleague, casual). Use **As
 2. Apply writing standards from [references/standards.md](references/standards.md)
 3. Use appropriate snippets from [references/snippets.md](references/snippets.md) when applicable
 4. Output: Ready-to-send message only
+
+If the user provides partial context (e.g., "write an email to my manager" without specifying intent), infer from context when possible. Use **AskUserQuestion** for missing critical details — intent and key points — that can't be reasonably inferred. Combine into a single question with multiSelect when asking about multiple facets.
 
 **No commentary, no alternatives.** Just the message.
 
@@ -64,16 +66,20 @@ Create initial version applying:
 Write to `.writing.local/{slug}/draft.md`
 
 ### Phase: Refine
-Present draft for user feedback. Per feedback round:
-1. User provides feedback
-2. Apply changes
-3. Log in `feedback.md`:
+Present draft and use **AskUserQuestion** to gather structured feedback:
+- Options like "Adjust tone", "Restructure", "Add detail", "Shorten" help focus revision rounds
+- Always include a freeform "Other" option for specific feedback
+
+Per feedback round:
+1. Apply changes
+2. Log in `feedback.md`:
 ```markdown
 ## Round {N}
 **Feedback:** {what user said}
 **Changes:** {what changed}
 ```
-4. Update draft
+3. Update draft
+4. Present updated version — repeat until user signals done
 
 ### Phase: Validate
 Check against standards:
@@ -100,8 +106,8 @@ Present final version.
 When user requests to save copy for reuse ("save this", "remember this phrase", "store for later"):
 
 1. Identify appropriate category in [references/snippets.md](references/snippets.md)
-2. Add the snippet under that category
-3. Create new category if none fits
+2. If category is unclear, use **AskUserQuestion** to let user pick from existing categories or create a new one
+3. Add the snippet under that category
 4. Confirm what was saved and where
 
 **Trigger phrases:**

@@ -4,7 +4,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS=(iter write prompt-dev chat-migration code-audit azure-devops skill-creator)
+SKILLS=(iter writing prompt-dev chat-migration code-audit azure-devops skill-creator)
 MCP_DIR="$SCRIPT_DIR/mcp-servers/shortcuts-mcp"
 
 echo "==> Validating workflow-tools plugin"

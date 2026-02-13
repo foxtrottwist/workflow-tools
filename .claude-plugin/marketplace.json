@@ -7,8 +7,8 @@
   "plugins": [
     {
       "name": "workflow-tools",
-      "description": "Seven skills (iter, write, prompt-dev, chat-migration, code-audit, azure-devops, skill-creator) and a macOS Shortcuts MCP server for productivity workflows.",
-      "version": "0.2.0",
+      "description": "Seven skills (iter, writing, prompt-dev, chat-migration, code-audit, azure-devops, skill-creator) and a macOS Shortcuts MCP server for productivity workflows.",
+      "version": "0.2.1",
       "source": "./",
       "repository": "https://github.com/Foxtrottwist/workflow-tools",
       "license": "MIT",
