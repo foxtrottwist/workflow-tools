@@ -1,11 +1,92 @@
 ---
 name: azure-devops
-description: "This skill should be used when working with Azure DevOps pull requests, reviewing PRs, listing PR comments or threads, checking PR status, creating PR comments, or using the az repos CLI. Triggers on 'review PR', 'PR comments', 'PR threads', 'check PR status', 'az repos', 'az devops', or any Azure DevOps CLI operation."
+description: "Azure DevOps PR workflows via az CLI and wrapper script. Use for reviewing PRs, listing threads/comments, checking status, posting comments, voting, or any az repos/az devops operation. Triggers on 'review PR', 'PR comments', 'PR threads', 'check PR', 'az repos', 'az devops'."
 ---
 
 # Azure DevOps CLI
 
-Recipes and patterns for Azure DevOps CLI (`az repos`, `az devops invoke`). Use `jq` for JSON processing — no Python fallbacks.
+Patterns for Azure DevOps CLI (`az repos`, `az devops invoke`, `scripts/az-pr.sh`). Use `jq` for JSON processing — no Python fallbacks.
+
+## First-Run Setup
+
+Before first use, verify `az` CLI is authenticated:
+
+```bash
+az account show
+```
+
+If not authenticated, run `az login`.
+
+Then offer to add auto-approve rules for read-only operations. Use AskUserQuestion to ask where to add them:
+- **Global** — `~/.claude/settings.json` (applies to all projects)
+- **Project-level** — `.claude/settings.local.json` (this repo only)
+
+Permission rules to add under `"permissions.allow"`:
+
+```json
+[
+  "Bash(az repos pr show *)",
+  "Bash(az repos pr list *)",
+  "Bash(az repos pr diff *)",
+  "Bash(az repos pr reviewer list *)",
+  "Bash(az repos show *)",
+  "Bash(az devops configure *)",
+  "Bash(*/az-pr.sh *)"
+]
+```
+
+These cover all read operations. Write operations (vote, comment, resolve) intentionally remain gated.
+
+## Permission Model
+
+**Read operations — execute directly, no confirmation needed:**
+- `az repos pr show`, `list`, `diff`
+- `az repos pr reviewer list`
+- `az devops invoke` with GET
+- `scripts/az-pr.sh` (all subcommands)
+
+**Write operations — use AskUserQuestion to confirm first:**
+- `az repos pr set-vote` — show the vote value, ask to confirm
+- `az devops invoke --http-method POST` — show comment content, ask to confirm
+- `az devops invoke --http-method PATCH` — show what's being resolved/changed, ask to confirm
+- `az repos pr update`, `create` — show the changes, ask to confirm
+
+Use AskUserQuestion (not just the Bash permission prompt) to give the user clear context about what the write will do before executing it.
+
+## Wrapper Script
+
+For PR review workflows, prefer `scripts/az-pr.sh` — one Bash call instead of 6+ separate `az` commands.
+
+| Subcommand | Output |
+|---|---|
+| `context <pr-id>` | Project, repo ID, branches, author (JSON) |
+| `threads <pr-id>` | Non-system threads (human-readable) |
+| `threads-json <pr-id>` | Non-system threads (structured JSON) |
+| `active <pr-id>` | Active/unresolved threads only |
+| `overview <pr-id>` | Full overview: context + reviewers + threads |
+| `files <pr-id>` | Changed files list |
+| `diff <pr-id>` | Full diff via git |
+
+```bash
+# Typical review start — one call gets everything
+scripts/az-pr.sh overview 12345
+```
+
+The script derives the project name from the PR itself (via `repository.project.name`), so it works correctly across repos without relying on `az devops configure` defaults.
+
+## Project Discovery
+
+Derive the project name from the PR — never rely on `az devops configure --list`.
+
+```bash
+# Preferred: from a PR (handles spaces, works across repos)
+PROJECT=$(az repos pr show --id {PR_ID} --query 'repository.project.name' -o tsv)
+
+# Alternative: from a repo name
+PROJECT=$(az repos show --repository my-repo --query 'project.name' -o tsv)
+```
+
+The `az devops configure --list | grep project` pattern is unreliable when working across multiple projects or orgs.
 
 ## Available Commands
 
@@ -24,22 +105,6 @@ Recipes and patterns for Azure DevOps CLI (`az repos`, `az devops invoke`). Use 
 | Create comment | `az devops invoke --http-method POST` | **No native command** |
 
 **Key gap:** `az repos pr thread` and `az repos pr comment` do not exist. Use `az devops invoke` with the REST API for all thread/comment operations.
-
-## JSON Output
-
-Use `jq` as the primary JSON tool. Two approaches depending on the need:
-
-**jq** — formatting, filtering, transforming:
-```bash
-az repos pr show --id {PR_ID} -o json 2>/dev/null | jq '.title'
-```
-
-**JMESPath `--query` + `-o tsv`** — extracting single values into shell variables:
-```bash
-REPO_ID=$(az repos pr show --id {PR_ID} --query 'repository.id' -o tsv)
-```
-
-Always pipe through `2>/dev/null` before `jq` to prevent stderr warnings from corrupting the JSON pipeline.
 
 ## Core Recipes
 
@@ -65,7 +130,7 @@ az repos pr show --id {PR_ID} --query "{
 az devops invoke \
   --area git \
   --resource pullRequestThreads \
-  --route-parameters project={PROJECT} repositoryId={REPO_ID} pullRequestId={PR_ID} \
+  --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId={PR_ID} \
   --api-version 7.1 \
   -o json 2>/dev/null | jq -r '
   .value[]
@@ -76,132 +141,107 @@ az devops invoke \
       | "  \(.author.displayName): \(.content // "" | split("\n")[0])")'
 ```
 
-### PR Threads (Structured JSON)
-
-```bash
-az devops invoke \
-  --area git \
-  --resource pullRequestThreads \
-  --route-parameters project={PROJECT} repositoryId={REPO_ID} pullRequestId={PR_ID} \
-  --api-version 7.1 \
-  -o json 2>/dev/null | jq '[
-    .value[]
-    | select(.comments[0].commentType == "system" | not)
-    | {
-        id,
-        status,
-        file: .threadContext.filePath,
-        comments: [
-          .comments[]
-          | select(.commentType == "system" | not)
-          | {
-              author: .author.displayName,
-              content: (.content // "" | split("\n")[0])
-            }
-        ]
-      }
-  ]'
-```
-
 ### PR File Changes
 
 ```bash
-# File list via REST
-az repos pr diff --id {PR_ID} -o json 2>/dev/null | jq -r '.changes[].item.path'
-
-# Full diff content — use git locally
-TARGET=$(az repos pr show --id {PR_ID} --query 'targetRefName' -o tsv | sed 's|refs/heads/||')
-SOURCE=$(az repos pr show --id {PR_ID} --query 'sourceRefName' -o tsv | sed 's|refs/heads/||')
-git fetch origin "$TARGET" "$SOURCE"
-git diff "origin/$TARGET...origin/$SOURCE"
+az repos pr diff --id {PR_ID} -o json 2>/dev/null | jq -r '.changes[] | "\(.changeType): \(.item.path)"'
 ```
 
-### PR Reviewer Votes
+### Create Comment
 
 ```bash
-az repos pr reviewer list --id {PR_ID} -o json 2>/dev/null | jq -r '
-  .[] | "\(.displayName): \(
-    if .vote == 10 then "approved"
-    elif .vote == 5 then "approved with suggestions"
-    elif .vote == 0 then "no vote"
-    elif .vote == -5 then "waiting"
-    elif .vote == -10 then "rejected"
-    else "unknown (\(.vote))"
-    end
-  )"'
-```
-
-### Create PR Comment
-
-```bash
-az devops invoke \
+RESULT=$(az devops invoke \
   --area git \
   --resource pullRequestThreads \
-  --route-parameters project={PROJECT} repositoryId={REPO_ID} pullRequestId={PR_ID} \
+  --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId={PR_ID} \
   --api-version 7.1 \
   --http-method POST \
   --in-file /dev/stdin \
   -o json <<'EOF'
 {
-  "comments": [
-    {
-      "parentCommentId": 0,
-      "content": "Comment text here",
-      "commentType": "text"
-    }
-  ],
+  "comments": [{ "parentCommentId": 0, "content": "Comment text", "commentType": "text" }],
   "status": "active"
 }
 EOF
+)
+
+# Verify
+THREAD_ID=$(echo "$RESULT" | jq -r '.id')
+if [ "$THREAD_ID" = "null" ] || [ -z "$THREAD_ID" ]; then
+  echo "Error: Thread creation failed" >&2
+fi
 ```
 
-### Reply to Existing Thread
+### Reply to Thread
 
 ```bash
-az devops invoke \
+RESULT=$(az devops invoke \
   --area git \
   --resource pullRequestThreadComments \
-  --route-parameters project={PROJECT} repositoryId={REPO_ID} pullRequestId={PR_ID} threadId={THREAD_ID} \
+  --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId={PR_ID} threadId={THREAD_ID} \
   --api-version 7.1 \
   --http-method POST \
   --in-file /dev/stdin \
   -o json <<'EOF'
 {
-  "content": "Reply text here",
+  "content": "Reply text",
   "parentCommentId": 0,
   "commentType": "text"
 }
 EOF
+)
+
+# Verify
+COMMENT_ID=$(echo "$RESULT" | jq -r '.id')
+if [ "$COMMENT_ID" = "null" ] || [ -z "$COMMENT_ID" ]; then
+  echo "Error: Reply failed" >&2
+fi
 ```
 
 ## Extracting IDs
 
-Most recipes need `{PROJECT}`, `{REPO_ID}`, and `{PR_ID}`. Extract them:
+Most recipes need `{PROJECT}`, `{REPO_ID}`, and `{PR_ID}`. Extract them from the PR:
 
 ```bash
-# From a known PR ID
 REPO_ID=$(az repos pr show --id {PR_ID} --query 'repository.id' -o tsv)
-PROJECT=$(az devops configure --list 2>/dev/null | grep 'project' | awk '{print $NF}')
+PROJECT=$(az repos pr show --id {PR_ID} --query 'repository.project.name' -o tsv)
 ```
 
-If project has spaces, quote it in `--route-parameters`: `project="My Project Name"`.
+Or use the wrapper script — `scripts/az-pr.sh context {PR_ID}` returns both along with branch info.
+
+## JSON Output
+
+Use `jq` as the primary JSON tool. Two approaches depending on the need:
+
+**jq** — formatting, filtering, transforming:
+```bash
+az repos pr show --id {PR_ID} -o json 2>/dev/null | jq '.title'
+```
+
+**JMESPath `--query` + `-o tsv`** — extracting single values into shell variables:
+```bash
+REPO_ID=$(az repos pr show --id {PR_ID} --query 'repository.id' -o tsv)
+```
+
+Recipes use `2>/dev/null` before `jq` for brevity. See `references/error-handling.md` for the `az_safe` pattern that surfaces errors instead of swallowing them.
 
 ## Gotchas
 
 1. **No native thread/comment commands** — `az repos pr thread` and `az repos pr comment` do not exist. Always use `az devops invoke` with `--area git --resource pullRequestThreads`.
 
-2. **Stderr corrupts JSON pipelines** — Always add `2>/dev/null` before piping `az` output to `jq`. Azure CLI emits warnings to stderr that break JSON parsing.
+2. **Stderr corrupts JSON pipelines** — `az` emits warnings to stderr that break `jq` parsing. Use the `az_safe` pattern from `references/error-handling.md` or `2>/dev/null` when you're confident the command will succeed.
 
-3. **Quote project names with spaces** — `--route-parameters project="My Project"` not `project=My Project`. Unquoted spaces split into separate arguments.
+3. **Quote project names** — Always use `project="$PROJECT"` in `--route-parameters`. Unquoted names with spaces split into separate arguments.
 
-4. **Use `!=` for jq negation** — `select(.x != "y")` is more reliable than `select(.x == "y" | not)`. Both work, but `!=` is clearer and avoids edge cases with null.
+4. **Don't rely on `az devops configure` for project name** — Derive from the PR via `--query 'repository.project.name'`. Configure defaults are unreliable across repos.
 
-5. **Vote codes are integers** — Map: `10=approved`, `5=approved with suggestions`, `0=no vote`, `-5=waiting`, `-10=rejected`.
+5. **Verify writes** — POST/PATCH responses include the created resource. Check `.id` is non-null to confirm the operation succeeded. See `references/error-handling.md`.
 
-6. **API version matters** — Use `--api-version 7.1` or later. Older versions may return different response shapes.
+6. **Vote codes are integers** — Map: `10=approved`, `5=approved with suggestions`, `0=no vote`, `-5=waiting`, `-10=rejected`.
 
-7. **Configure defaults once** — Run `az devops configure --defaults organization=URL project=NAME` to skip `--org` and `--project` on every command.
+7. **API version matters** — Use `--api-version 7.1` or later. Older versions may return different response shapes.
 
 ## Reference
 
-See `references/pr-recipes.md` for detailed recipes with response structures, REST API endpoint mappings, and `az devops invoke` route parameter reference.
+- `references/pr-recipes.md` — Full recipe collection with response structures, REST API mappings, inline comments, thread resolution
+- `references/error-handling.md` — `az_safe` pattern, error categories, verification after writes

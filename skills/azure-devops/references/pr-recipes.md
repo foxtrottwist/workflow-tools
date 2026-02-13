@@ -2,6 +2,10 @@
 
 Copy-paste-ready recipes. Replace `{PR_ID}`, `{REPO_ID}`, `{PROJECT}` with actual values.
 
+> **Tip:** For read-only PR review workflows, prefer `scripts/az-pr.sh` — it bundles multiple calls into one command with built-in error handling. These recipes are for custom operations and write workflows.
+
+> **Error handling:** Recipes use `2>/dev/null` before `jq` pipes for brevity. In practice, use the `az_safe` pattern from `references/error-handling.md` to avoid swallowing real errors.
+
 ## Setup
 
 ### Extract IDs from a PR
@@ -9,8 +13,25 @@ Copy-paste-ready recipes. Replace `{PR_ID}`, `{REPO_ID}`, `{PROJECT}` with actua
 ```bash
 # Get repo ID and project from a known PR
 REPO_ID=$(az repos pr show --id {PR_ID} --query 'repository.id' -o tsv)
-PROJECT=$(az devops configure --list 2>/dev/null | grep 'project' | awk '{print $NF}')
+PROJECT=$(az repos pr show --id {PR_ID} --query 'repository.project.name' -o tsv)
 ```
+
+### Discovering the Project Name
+
+Three methods, in order of preference:
+
+```bash
+# 1. From a PR (most reliable — works across repos and handles spaces)
+PROJECT=$(az repos pr show --id {PR_ID} --query 'repository.project.name' -o tsv)
+
+# 2. From a repo name
+PROJECT=$(az repos show --repository my-repo --query 'project.name' -o tsv)
+
+# 3. From configured defaults (unreliable if you work across multiple orgs/projects)
+az devops configure --list
+```
+
+Method 1 is preferred because it derives the project directly from the PR's metadata. The `az devops configure --list` approach breaks when switching between repos in different projects.
 
 ### Configure Defaults (One-Time)
 
@@ -81,7 +102,7 @@ All thread/comment operations require `az devops invoke` — no native CLI comma
 az devops invoke \
   --area git \
   --resource pullRequestThreads \
-  --route-parameters project="{PROJECT}" repositoryId={REPO_ID} pullRequestId={PR_ID} \
+  --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId={PR_ID} \
   --api-version 7.1 \
   -o json 2>/dev/null | jq -r '
   .value[]
@@ -107,11 +128,11 @@ az devops invoke \
 az devops invoke \
   --area git \
   --resource pullRequestThreads \
-  --route-parameters project="{PROJECT}" repositoryId={REPO_ID} pullRequestId={PR_ID} \
+  --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId={PR_ID} \
   --api-version 7.1 \
   -o json 2>/dev/null | jq '[
     .value[]
-    | select(.comments[0].commentType == "system" | not)
+    | select(.comments[0].commentType != "system")
     | {
         id,
         status,
@@ -119,7 +140,7 @@ az devops invoke \
         line: .threadContext.rightFileStart.line,
         comments: [
           .comments[]
-          | select(.commentType == "system" | not)
+          | select(.commentType != "system")
           | {
               author: .author.displayName,
               content: (.content // "" | split("\n")[0]),
@@ -136,7 +157,7 @@ az devops invoke \
 az devops invoke \
   --area git \
   --resource pullRequestThreads \
-  --route-parameters project="{PROJECT}" repositoryId={REPO_ID} pullRequestId={PR_ID} \
+  --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId={PR_ID} \
   --api-version 7.1 \
   -o json 2>/dev/null | jq -r '
   .value[]
@@ -150,7 +171,7 @@ az devops invoke \
 az devops invoke \
   --area git \
   --resource pullRequestThreads \
-  --route-parameters project="{PROJECT}" repositoryId={REPO_ID} pullRequestId={PR_ID} \
+  --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId={PR_ID} \
   --api-version 7.1 \
   -o json 2>/dev/null | jq '[.value[] | select(.comments[0].commentType != "system")] | length'
 ```
@@ -158,10 +179,10 @@ az devops invoke \
 ### Create New Thread (General Comment)
 
 ```bash
-az devops invoke \
+RESULT=$(az devops invoke \
   --area git \
   --resource pullRequestThreads \
-  --route-parameters project="{PROJECT}" repositoryId={REPO_ID} pullRequestId={PR_ID} \
+  --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId={PR_ID} \
   --api-version 7.1 \
   --http-method POST \
   --in-file /dev/stdin \
@@ -177,15 +198,23 @@ az devops invoke \
   "status": "active"
 }
 EOF
+)
+
+# Verify the thread was created
+THREAD_ID=$(echo "$RESULT" | jq -r '.id')
+if [ "$THREAD_ID" = "null" ] || [ -z "$THREAD_ID" ]; then
+  echo "Error: Thread creation failed" >&2
+  echo "$RESULT" | jq . >&2
+fi
 ```
 
 ### Create Inline Comment (On a File/Line)
 
 ```bash
-az devops invoke \
+RESULT=$(az devops invoke \
   --area git \
   --resource pullRequestThreads \
-  --route-parameters project="{PROJECT}" repositoryId={REPO_ID} pullRequestId={PR_ID} \
+  --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId={PR_ID} \
   --api-version 7.1 \
   --http-method POST \
   --in-file /dev/stdin \
@@ -206,15 +235,23 @@ az devops invoke \
   "status": "active"
 }
 EOF
+)
+
+# Verify
+THREAD_ID=$(echo "$RESULT" | jq -r '.id')
+if [ "$THREAD_ID" = "null" ] || [ -z "$THREAD_ID" ]; then
+  echo "Error: Inline comment creation failed" >&2
+  echo "$RESULT" | jq . >&2
+fi
 ```
 
 ### Reply to Existing Thread
 
 ```bash
-az devops invoke \
+RESULT=$(az devops invoke \
   --area git \
   --resource pullRequestThreadComments \
-  --route-parameters project="{PROJECT}" repositoryId={REPO_ID} pullRequestId={PR_ID} threadId={THREAD_ID} \
+  --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId={PR_ID} threadId={THREAD_ID} \
   --api-version 7.1 \
   --http-method POST \
   --in-file /dev/stdin \
@@ -225,6 +262,14 @@ az devops invoke \
   "commentType": "text"
 }
 EOF
+)
+
+# Verify
+COMMENT_ID=$(echo "$RESULT" | jq -r '.id')
+if [ "$COMMENT_ID" = "null" ] || [ -z "$COMMENT_ID" ]; then
+  echo "Error: Reply failed" >&2
+  echo "$RESULT" | jq . >&2
+fi
 ```
 
 ### Resolve a Thread
@@ -233,7 +278,7 @@ EOF
 az devops invoke \
   --area git \
   --resource pullRequestThreads \
-  --route-parameters project="{PROJECT}" repositoryId={REPO_ID} pullRequestId={PR_ID} threadId={THREAD_ID} \
+  --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId={PR_ID} threadId={THREAD_ID} \
   --api-version 7.1 \
   --http-method PATCH \
   --in-file /dev/stdin \
@@ -361,7 +406,7 @@ Maps to:
 az devops invoke \
   --area {area} \
   --resource {resource} \
-  --route-parameters project={project} repositoryId={repoId} pullRequestId={prId} \
+  --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId={prId} \
   --api-version 7.1
 ```
 
@@ -418,7 +463,10 @@ az devops invoke \
   ],
   "repository": {
     "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    "name": "my-repo"
+    "name": "my-repo",
+    "project": {
+      "name": "My Project"
+    }
   },
   "lastMergeSourceCommit": { "commitId": "abc123" },
   "lastMergeTargetCommit": { "commitId": "def456" }
@@ -456,12 +504,14 @@ select(.commentType == "system" | not)
 
 ## Error Handling
 
+See `references/error-handling.md` for the `az_safe` pattern and detailed error categories.
+
 ### Common Failures
 
 | Error | Cause | Fix |
 |-------|-------|-----|
 | `'thread' is not in the 'az repos pr' command group` | No native thread command | Use `az devops invoke` |
-| `jq: error ... null` | Stderr mixed into JSON | Add `2>/dev/null` before pipe |
-| Route param parsed as separate args | Unquoted spaces in project name | Quote: `project="My Project"` |
+| `jq: error ... null` | Stderr mixed into JSON | Add `2>/dev/null` before pipe (or use `az_safe`) |
+| Route param parsed as separate args | Unquoted spaces in project name | Quote: `project="$PROJECT"` |
 | Empty or malformed response | Old API version | Use `--api-version 7.1` |
 | `Please run 'az login'` | Not authenticated | Run `az login` first |
