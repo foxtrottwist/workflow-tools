@@ -11,6 +11,12 @@ Claude Code plugin packaging seven skills and a macOS Shortcuts MCP server. Sync
 - `claude --plugin-dir .` — load plugin locally without installing
 - `claude --debug` — debug plugin loading/registration
 
+## Versioning
+
+Bump the version in **both** `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` whenever making changes. `claude plugin update` compares the installed version against the marketplace version — if they match, it silently no-ops. Without a bump, users must uninstall and reinstall to pick up changes.
+
+Use semver: patch for bug fixes, minor for new/updated skills, major for breaking changes.
+
 ## Plugin Validation
 
 `claude plugin validate .` validates marketplace JSON. `build.sh` is the structural validation layer — checks for `.claude-plugin/plugin.json`, `.mcp.json`, skill SKILL.md files, and MCP server artifacts.
