@@ -34,6 +34,8 @@ Plan mode is required. Enter plan mode immediately when this skill is invoked �
 - **Development**: Tasks (T1, T2, ...) with files, criteria, model selection. See [references/development.md](references/development.md).
 - **Knowledge**: Phases using domain templates (R1-R4, D1-D4, A1-A4, P1-P4). See [references/knowledge.md](references/knowledge.md).
 
+**Skill mapping**: Cross-reference decomposed units against available skills (listed in the conversation's system reminders). If a unit aligns with a skill's triggers, annotate it with the skill name in the plan. Mapped tasks should invoke the skill — it provides specialized workflows and domain knowledge that general-purpose prompts lack.
+
 ### 2. Task Dispatch
 
 After plan approval, dispatch each unit via the native Task tool.
@@ -48,8 +50,10 @@ Task tool call:
     Task: T{N} "{title}"
     Files: {paths}
     Criteria: {acceptance criteria}
+    Skill: {name, if mapped — omit if none}
 
     Read .claude/guardrails.md for accumulated lessons before starting.
+    If a skill is listed, invoke it before starting — it provides specialized workflows for this type of work.
 
     Work toward the criteria. Commit after completing each criterion — progress must be recoverable if interrupted. Do not batch all changes into a single commit at the end.
     If ALL criteria met, state "DONE" with summary.
@@ -66,8 +70,10 @@ Task tool call:
     Phase: {ID} "{title}"
     Criteria: {acceptance criteria}
     Output: {output_path}
+    Skill: {name, if mapped — omit if none}
 
     Read .claude/guardrails.md for accumulated lessons before starting.
+    If a skill is listed, invoke it before starting — it provides specialized workflows for this type of work.
 
     Work toward the criteria. Save output to the specified path.
     If ALL criteria met, state "DONE" with summary.
