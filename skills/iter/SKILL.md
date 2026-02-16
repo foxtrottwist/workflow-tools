@@ -51,7 +51,7 @@ Task tool call:
 
     Read .claude/guardrails.md for accumulated lessons before starting.
 
-    Work toward the criteria. Commit progress.
+    Work toward the criteria. Commit after completing each criterion — progress must be recoverable if interrupted. Do not batch all changes into a single commit at the end.
     If ALL criteria met, state "DONE" with summary.
     If blocked, state "BLOCKED" with reason.
 ```

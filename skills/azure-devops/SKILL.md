@@ -31,11 +31,12 @@ Permission rules to add under `"permissions.allow"`:
   "Bash(az repos pr reviewer list *)",
   "Bash(az repos show *)",
   "Bash(az devops configure *)",
+  "Bash(az devops invoke *)",
   "Bash(*/az-pr.sh *)"
 ]
 ```
 
-These cover all read operations. Write operations (vote, comment, resolve) intentionally remain gated.
+Write safety comes from AskUserQuestion — the skill always shows write details and asks for confirmation before executing POST/PATCH operations. The Bash permission prompt alone doesn't give users enough context to make informed decisions, so the skill gates writes at a higher level.
 
 ## Permission Model
 
@@ -240,6 +241,8 @@ Recipes use `2>/dev/null` before `jq` for brevity. See `references/error-handlin
 6. **Vote codes are integers** — Map: `10=approved`, `5=approved with suggestions`, `0=no vote`, `-5=waiting`, `-10=rejected`.
 
 7. **API version matters** — Use `--api-version 7.1` or later. Older versions may return different response shapes.
+
+8. **`az devops invoke` covers reads and writes** — The permission rule allows both GET and POST/PATCH calls without a Bash prompt. This is intentional — AskUserQuestion gates all writes with full context (comment text, resolution status, etc.) before execution. The Bash prompt would just show a raw command string, which isn't useful for informed approval.
 
 ## Reference
 
