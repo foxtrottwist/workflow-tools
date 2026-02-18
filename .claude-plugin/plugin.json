@@ -1,7 +1,7 @@
 {
   "name": "workflow-tools",
-  "version": "0.2.3",
-  "description": "Productivity and development workflow toolkit. Task orchestration with verification gates, written communication with quality standards, prompt template development, conversation context migration, documentation-code alignment auditing, Azure DevOps PR operations, and skill creation. Includes macOS Shortcuts automation via MCP.",
+  "version": "0.3.0",
+  "description": "Productivity and development workflow toolkit. Task orchestration with verification gates, written communication with quality standards, prompt template development, intent refinement, conversation context migration, documentation-code alignment auditing, Azure DevOps PR operations, and skill creation. Includes macOS Shortcuts automation via MCP.",
   "author": {
     "name": "Law Horne"
   },
