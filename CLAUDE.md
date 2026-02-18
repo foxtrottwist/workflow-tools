@@ -7,7 +7,6 @@ Claude Code plugin packaging eight skills and a macOS Shortcuts MCP server. This
 ## Key Commands
 
 - `./build.sh` — validates plugin structure (skills, MCP artifacts, plugin.json)
-- `./sync.sh` — copies skills + rebuilds MCP server (run from monorepo)
 - `claude --plugin-dir .` — load plugin locally without installing
 - `claude --debug` — debug plugin loading/registration
 
