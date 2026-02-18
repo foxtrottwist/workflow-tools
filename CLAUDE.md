@@ -2,7 +2,7 @@
 
 ## Overview
 
-Claude Code plugin packaging seven skills and a macOS Shortcuts MCP server. Synced from the workflow-systems monorepo — this repo holds distributable copies, not canonical sources.
+Claude Code plugin packaging eight skills and a macOS Shortcuts MCP server. This repo is the **canonical source** for all bundled skills — edit skills directly here.
 
 ## Key Commands
 
@@ -30,6 +30,14 @@ Use semver: patch for bug fixes, minor for new/updated skills, major for breakin
 - Schema URL 404 — `$schema` in marketplace.json doesn't resolve ([#9686](https://github.com/anthropics/claude-code/issues/9686))
 - Submodules not cloned during marketplace install ([#17293](https://github.com/anthropics/claude-code/issues/17293)) — not an issue here since plugin ships flat copies
 - Reserved names blocked: `claude-code-marketplace`, `claude-plugins-official`, `anthropic-marketplace`, `anthropic-plugins`, `agent-skills`, `life-sciences`
+
+## Adding a New Skill
+
+1. Create skill directory at `skills/<name>/` with `SKILL.md` (and optional `references/`, `scripts/`, `assets/`)
+2. Add skill name to the `SKILLS` array in `build.sh` (hardcoded, not auto-discovered)
+3. Bump version in both `plugin.json` and `marketplace.json`
+4. Update skill count and description in `marketplace.json`
+5. Run `bash build.sh` to validate
 
 ## Structure Notes
 
