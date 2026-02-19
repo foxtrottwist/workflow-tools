@@ -4,7 +4,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS=(iter writing prompt-dev chat-migration code-audit azure-devops skill-creator sharpen)
+SKILLS=(iter writing prompt-dev chat-migration code-audit azure-devops skill-creator sharpen swift-dev swift-concurrency swiftui-expert-skill swift-conventions axiom-accessibility-diag axiom-foundation-models-ref axiom-swift-testing axiom-swiftdata axiom-swiftui-26-ref axiom-swiftui-debugging)
 MCP_DIR="$SCRIPT_DIR/mcp-servers/shortcuts-mcp"
 
 echo "==> Validating workflow-tools plugin"

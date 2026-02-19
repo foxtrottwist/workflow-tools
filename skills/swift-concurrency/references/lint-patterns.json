@@ -1,0 +1,10 @@
+[
+  {"pattern": "DispatchQueue\\.main\\.async", "severity": "warning", "message": "Legacy GCD pattern — use @MainActor or MainActor.run instead"},
+  {"pattern": "DispatchQueue\\.global", "severity": "warning", "message": "Legacy GCD pattern — use structured concurrency (Task, TaskGroup) instead"},
+  {"pattern": "Thread\\.current", "severity": "error", "message": "Unavailable in async contexts — use actor isolation instead"},
+  {"pattern": "Thread\\.sleep", "severity": "warning", "message": "Blocking sleep — use Task.sleep(for:) or Task.sleep(nanoseconds:) instead"},
+  {"pattern": "DispatchGroup", "severity": "warning", "message": "Legacy concurrency — use TaskGroup or async let instead"},
+  {"pattern": "DispatchSemaphore", "severity": "error", "message": "Blocking in async contexts causes deadlocks — use actors or AsyncStream"},
+  {"pattern": "@StateObject", "severity": "warning", "message": "Legacy — use @State with @Observable instead"},
+  {"pattern": "XCTAssert", "severity": "info", "message": "Legacy XCTest assertion — use #expect or #require from Swift Testing"}
+]

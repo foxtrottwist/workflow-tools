@@ -1,0 +1,49 @@
+[
+  {
+    "pattern": "foregroundColor\\(",
+    "severity": "warning",
+    "message": "Deprecated — use foregroundStyle()",
+    "replacement": "foregroundStyle("
+  },
+  {
+    "pattern": "@StateObject",
+    "severity": "warning",
+    "message": "Legacy pattern — use @State with @Observable instead"
+  },
+  {
+    "pattern": "\\.cornerRadius\\(",
+    "severity": "warning",
+    "message": "Deprecated — use clipShape(.rect(cornerRadius:))",
+    "replacement": "clipShape(.rect(cornerRadius:"
+  },
+  {
+    "pattern": "NavigationView",
+    "severity": "warning",
+    "message": "Deprecated — use NavigationStack with navigationDestination(for:)"
+  },
+  {
+    "pattern": "UIScreen\\.main\\.bounds",
+    "severity": "warning",
+    "message": "Deprecated — use GeometryReader or containerRelativeFrame()"
+  },
+  {
+    "pattern": "\\.id(\\\\\\.self)",
+    "severity": "warning",
+    "message": "Unstable identity in ForEach — provide a stable Identifiable id"
+  },
+  {
+    "pattern": "GeometryReader",
+    "severity": "info",
+    "message": "Consider containerRelativeFrame() or visualEffect() if only reading size"
+  },
+  {
+    "pattern": "ObservableObject",
+    "severity": "warning",
+    "message": "Legacy — use @Observable macro instead"
+  },
+  {
+    "pattern": "\\.animation\\(",
+    "severity": "info",
+    "message": "Verify this uses the value-based .animation(_:value:) overload"
+  }
+]
