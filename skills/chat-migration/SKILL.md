@@ -1,6 +1,6 @@
 ---
 name: chat-migration
-description: Capture conversation context for seamless continuation in a new chat. Creates structured handoff documents with decisions, code context, and continuation guidance. Triggers on "save context", "migrate chat", "export conversation", "hitting context limit", "save this session", or requests to preserve work before starting fresh.
+description: "Use when approaching context limits or switching chats. Triggers on \"save context\", \"migrate chat\", \"export conversation\", \"hitting context limit\", \"save this session\", or requests to preserve work before starting fresh."
 ---
 
 # Chat Migration

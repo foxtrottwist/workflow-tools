@@ -20,7 +20,10 @@ Agents are fallible. Even well-scoped tasks/phases can fail in subtle ways:
 │                   TASK REVIEW                               │
 │  Cross-unit integration. Coherence. Completeness.           │
 ├─────────────────────────────────────────────────────────────┤
-│              VERIFICATION AGENT (Quality/Code Review)       │
+│         VERIFICATION AGENT — Stage 1: Spec Compliance       │
+│  Requirements met? Nothing missing? Nothing extra?          │
+├─────────────────────────────────────────────────────────────┤
+│         VERIFICATION AGENT — Stage 2: Code Quality          │
 │  Adversarial scrutiny. Depth check. Gap analysis.           │
 ├─────────────────────────────────────────────────────────────┤
 │            MANDATORY CONFIRMATION PASS (N+1)                │
@@ -113,9 +116,13 @@ If this gate fails, treat it as a failed confirmation: the confirmation agent's 
 
 ---
 
-### Layer 4: Verification Agent
+### Layer 4: Verification Agent (Two-Stage Review)
 
-**What it is:** Dedicated agent with adversarial mindset.
+**What it is:** Dedicated agent with adversarial mindset, split into two sequential stages. Stage 1 must pass before Stage 2 runs.
+
+#### Stage 1: Spec Compliance (always first)
+
+Verify implementation matches requirements — nothing more, nothing less.
 
 **Task tool dispatch:**
 ```
@@ -123,20 +130,46 @@ Task tool call:
 - subagent_type: "general-purpose"
 - model: sonnet
 - prompt: |
-    Review {task/phase} "{title}" with adversarial mindset.
+    Review {task/phase} "{title}" for spec compliance.
     Files/Output: {paths}
     Criteria: {acceptance criteria}
 
-    Check for:
-    - Incomplete work, stubs, TODOs
+    Check ONLY:
+    - Are all acceptance criteria met?
+    - Any requirements missing?
+    - Any unrequested additions?
+
+    Output: SPEC_PASS or SPEC_GAPS with specific issues.
+```
+
+If `SPEC_GAPS`: fix gaps → re-check spec compliance (loop until `SPEC_PASS`, max 3 cycles).
+
+#### Stage 2: Code Quality (only after SPEC_PASS)
+
+Review implementation quality, edge cases, and design.
+
+**Task tool dispatch:**
+```
+Task tool call:
+- subagent_type: "general-purpose"
+- model: sonnet
+- prompt: |
+    Review {task/phase} "{title}" for code quality.
+    Files/Output: {paths}
+
+    Check:
     - Edge cases and error handling (dev)
+    - Design and architecture
+    - Test coverage and quality
+    - Performance concerns
     - Shallow analysis or missing perspectives (knowledge)
-    - Quality gaps
 
     Output: VERIFIED or GAPS_FOUND with specific issues.
 ```
 
 **Output:** `VERIFIED` or `GAPS_FOUND` with specific issues.
+
+**Why two stages:** Spec compliance is objective — did you build what was asked? Code quality is subjective — is it well-built? Mixing them causes reviewers to flag style issues while missing missing requirements. Spec first ensures completeness before quality polish.
 
 ### Stub Detection
 
@@ -198,7 +231,11 @@ Task/Phase Start
 │
 ├── Programmatic Gate (dev, again — ensure confirmation didn't break anything)
 │
-├── Verification Agent (Task tool, adversarial review)
+├── Verification Agent — Stage 1: Spec Compliance
+│   ├── SPEC_PASS → Proceed to Stage 2
+│   └── SPEC_GAPS → Fix → Re-check spec (max 3 cycles)
+│
+├── Verification Agent — Stage 2: Code Quality
 │   ├── VERIFIED → Unit complete
 │   └── GAPS_FOUND → Fix → Re-verify (max 3 cycles)
 │
@@ -215,7 +252,8 @@ After all units:
 |-------|------------|-----------|
 | Programmatic (dev) | No | Fast, objective, no reason to skip |
 | Confirmation (N+1) | No | Core mechanism for catching overconfidence |
-| Verification | Rarely | Skip only for trivial tasks |
+| Verification Stage 1 (Spec) | No | Spec compliance is objective — always check |
+| Verification Stage 2 (Quality) | Rarely | Skip only for trivial tasks |
 | Task Review | No | Catches cross-unit issues |
 | Human Review | No | Final authority |
 
@@ -291,7 +329,8 @@ Rare. Only for actions Claude cannot perform (external account auth, physical ac
 | Work Pass | Do the work | -- |
 | Programmatic (dev) | Objective checks | Syntax, types, regressions |
 | **Confirmation (N+1)** | **Independent agreement** | **Incomplete work, misunderstood criteria** |
-| Verification | Quality/code review | Shallow work, gaps, quality issues |
+| Verification Stage 1 | Spec compliance | Missing requirements, unrequested additions |
+| Verification Stage 2 | Quality/code review | Shallow work, edge cases, quality issues |
 | Task Review | Integration check | Cross-unit issues, coherence |
 | Human Review | Final authority | Judgment calls, quality assessment |
 

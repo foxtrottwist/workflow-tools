@@ -1,6 +1,6 @@
 ---
 name: writing
-description: Written communication with quality standards. Handles message composition (emails, texts, notes), proofreading, and professional content creation. Supports saving reusable snippets for future use. Triggers on "write", "compose", "draft", "proofread", "fix grammar", "help me say", "save this phrase", or requests to create professional content.
+description: "Use when composing emails, texts, notes, or professional content. Triggers on \"write\", \"compose\", \"draft\", \"proofread\", \"fix grammar\", \"help me say\", \"save this phrase\", or requests to create professional communication."
 ---
 
 # Writing

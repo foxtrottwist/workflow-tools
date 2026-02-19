@@ -1,6 +1,6 @@
 ---
 name: code-audit
-description: Verify documentation accuracy against code behavior using parallel subagents. Supports resume after interruption, accumulates codebase-specific lessons, and includes verification gates. Triggers on "audit the codebase", "verify documentation", "check docs match code", "review codebase", "documentation health", "doc drift", "stale documentation", or requests to validate code/doc alignment.
+description: "Use when documentation may be out of sync with code. Triggers on \"audit the codebase\", \"verify documentation\", \"check docs match code\", \"review codebase\", \"documentation health\", \"doc drift\", \"stale documentation\", or requests to validate code/doc alignment."
 ---
 
 # Code Audit

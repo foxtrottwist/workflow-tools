@@ -310,6 +310,11 @@ Write the YAML frontmatter with `name` and `description`:
 - `description`: This is the primary triggering mechanism for your skill, and helps Claude understand when to use the skill.
   - Include both what the Skill does and specific triggers/contexts for when to use it.
   - Include all "when to use" information here - Not in the body. The body is only loaded after triggering, so "When to Use This Skill" sections in the body are not helpful to Claude.
+  - **Do NOT summarize the skill's workflow in the description.** When a description includes process details, Claude may follow the description as a shortcut instead of reading the full SKILL.md body. Describe only triggering conditions — the workflow belongs in the body.
+    - Bad: `"Use for TDD - write test first, watch it fail, write minimal code, refactor"`
+    - Bad: `"Dispatches subagent per task with code review between tasks"`
+    - Good: `"Use when implementing any feature or bugfix, before writing implementation code"`
+    - Good: `"Use when executing implementation plans with independent tasks"`
   - Example description for a `docx` skill: "Comprehensive document creation, editing, and analysis with support for tracked changes, comments, formatting preservation, and text extraction. Use when Claude needs to work with professional documents (.docx files) for: (1) Creating new documents, (2) Modifying or editing content, (3) Working with tracked changes, (4) Adding comments, or any other document tasks"
 
 Do not include any other fields in YAML frontmatter.
@@ -355,3 +360,29 @@ After testing the skill, users may request improvements. Often this happens righ
 2. Notice struggles or inefficiencies
 3. Identify how SKILL.md or bundled resources should be updated
 4. Implement changes and test again
+
+## Skill Types and Testing Strategies
+
+Different skill types need different test approaches. Match testing to the skill's purpose:
+
+### Discipline-enforcing skills
+Skills that enforce rules or constraints (TDD, verification, coding standards).
+
+**Test with pressure scenarios:** Create realistic situations where the agent is incentivized to skip the rule. Combine 3+ pressures (time + sunk cost + authority + exhaustion). Force explicit A/B/C choices. Capture rationalizations verbatim and build counter-tables in the skill.
+
+**Bulletproofing cycle:** Baseline test (without skill) → document failures → write skill → re-test under pressure → capture new rationalizations → add explicit counters → re-test until compliant.
+
+### Technique skills
+How-to guides for specific methods (debugging methodology, condition-based waiting).
+
+**Test with application scenarios:** Can the agent apply the technique to a new problem? Does it handle variations and edge cases? Are there gaps in the instructions?
+
+### Pattern skills
+Mental models for problem recognition (complexity reduction, information hiding).
+
+**Test with recognition scenarios:** Does the agent recognize when the pattern applies? Can it apply the mental model? Does it know when NOT to apply it?
+
+### Reference skills
+API docs, syntax guides, domain knowledge (SwiftData reference, accessibility diagnostics).
+
+**Test with retrieval scenarios:** Can the agent find the right information? Can it apply what it found correctly? Are common use cases covered?

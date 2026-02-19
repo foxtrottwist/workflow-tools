@@ -1,6 +1,6 @@
 ---
 name: iter
-description: Task orchestration with verification gates and domain-specific decomposition. Auto-detects development (code) or knowledge (research/writing/analysis/planning) mode. Adds confirmation passes, verification agents, and guardrails on top of native Task system. Triggers - /iter, "help me build", "implement", "research", "write a document", "analyze".
+description: "Use when building features, implementing tasks, researching topics, writing documents, or analyzing problems. Triggers on /iter, \"help me build\", \"implement\", \"research\", \"write a document\", \"analyze\", or any multi-step task that benefits from structured orchestration."
 ---
 
 # Iterative
