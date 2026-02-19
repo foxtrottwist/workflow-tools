@@ -2,9 +2,9 @@
 
 ## Overview
 
-Claude Code plugin packaging twenty-one skills and a macOS Shortcuts MCP server. This repo is the **canonical source** for all bundled skills — edit skills directly here.
+Claude Code plugin packaging twenty skills and a macOS Shortcuts MCP server. This repo is the **canonical source** for all bundled skills — edit skills directly here.
 
-**Productivity skills:** iter, writing, prompt-dev, sharpen, chat-migration, code-audit, azure-devops, skill-creator.
+**Productivity skills:** iter, writing, prompt-dev, sharpen, chat-migration, code-audit, azure-devops.
 
 **Development discipline skills:** tdd, systematic-debugging, worktree.
 
@@ -13,6 +13,7 @@ Claude Code plugin packaging twenty-one skills and a macOS Shortcuts MCP server.
 ## Key Commands
 
 - `./build.sh` — validates plugin structure (skills, MCP artifacts, plugin.json)
+- `./sync.sh` — rebuilds MCP server artifacts from monorepo source (skills are edited directly here)
 - `claude --plugin-dir .` — load plugin locally without installing
 - `claude --debug` — debug plugin loading/registration
 

@@ -1,20 +1,43 @@
 # workflow-tools
 
-A Claude Code plugin bundling seven skills and a macOS Shortcuts MCP server for productivity workflows.
+A Claude Code plugin bundling twenty skills and a macOS Shortcuts MCP server for productivity and Swift/iOS development workflows.
 
 ## What's included
 
-### Skills
+### Productivity Skills
 
 | Skill | Trigger | What it does |
 |-------|---------|--------------|
-| [**iter**](https://github.com/foxtrottwist/iterative) | `/iter`, "help me build", "implement", "research" | Task orchestration with verification gates. Auto-detects development or knowledge work mode, decomposes into atomic tasks, runs each through fresh-context iterations. |
-| [**write**](https://github.com/foxtrottwist/write) | `/write`, "compose", "draft", "proofread" | Written communication with quality standards. Compose messages, proofread text, or create professional content with iterative refinement. |
-| [**prompt-dev**](https://github.com/foxtrottwist/prompt-dev) | `/prompt-dev`, "create a prompt", "build a template" | Prompt template development following Claude 4 conventions. Iterative DISCOVER → DRAFT → TEST → REFINE → VALIDATE workflow. |
-| [**chat-migration**](https://github.com/foxtrottwist/chat-migration) | `/chat-migration`, "save context", "hitting context limit" | Captures conversation context into structured handoff documents for seamless continuation in a new chat. |
-| [**code-audit**](https://github.com/foxtrottwist/code-audit) | `/code-audit`, "verify documentation", "check docs match code" | Documentation-code alignment verification using parallel subagents. Finds stale docs, drift, and inaccuracies. |
-| [**azure-devops**](https://github.com/foxtrottwist/azure-devops) | "review PR", "PR comments", "az repos", "az devops" | Azure DevOps CLI recipes for PR operations — threads, comments, votes, diffs via `az repos` and `az devops invoke`. |
-| **skill-creator** | "create a skill", "build a new skill" | Anthropic's skill creation guide, synced from [anthropic-skills](https://github.com/anthropics/anthropic-skills) (Apache 2.0). |
+| **iter** | `/iter`, "help me build", "implement", "research" | Task orchestration with verification gates. Auto-detects development or knowledge work mode. |
+| **writing** | `/write`, "compose", "draft", "proofread" | Written communication with quality standards. Compose, proofread, or create professional content. |
+| **prompt-dev** | `/prompt-dev`, "create a prompt", "build a template" | Prompt template development following Claude 4 conventions. |
+| **sharpen** | "sharpen", "refine my thinking", "focus this idea" | Refine raw thoughts into focused statements of intent through guided questioning. |
+| **chat-migration** | `/chat-migration`, "save context", "hitting context limit" | Capture conversation context into structured handoff documents for new chats. |
+| **code-audit** | `/code-audit`, "verify documentation", "check docs match code" | Documentation-code alignment verification using parallel subagents. |
+| **azure-devops** | "review PR", "PR comments", "az repos", "az devops" | Azure DevOps CLI recipes for PR operations via `az repos` and `az devops invoke`. |
+
+### Development Discipline Skills
+
+| Skill | Trigger | What it does |
+|-------|---------|--------------|
+| **tdd** | Starting feature work, bug fixes, refactoring | Enforce RED-GREEN-REFACTOR discipline. No production code without a failing test. |
+| **systematic-debugging** | Bugs, test failures, unexpected behavior | Find root cause before proposing fixes. Investigation-first approach. |
+| **worktree** | Starting new branches, parallel sessions | Create isolated git worktrees for concurrent Claude Code sessions. |
+
+### Swift/iOS Skills
+
+| Skill | Trigger | What it does |
+|-------|---------|--------------|
+| **swift-dev** | Swift, SwiftUI, iOS development | Hub skill — routes to specialist skills for deep guidance. |
+| **swift-concurrency** | async/await, actors, Sendable, Swift 6 migration | Expert guidance on Swift Concurrency patterns and safety. |
+| **swiftui-expert-skill** | Building or reviewing SwiftUI views | State management, view composition, performance, Liquid Glass adoption. |
+| **swift-conventions** | Generating or reviewing Swift code | Quick-reference coding standards for Swift 6.2, SwiftUI, SwiftData, Foundation Models. |
+| **axiom-accessibility-diag** | VoiceOver issues, Dynamic Type, color contrast | Accessibility diagnostics with WCAG compliance for iOS/macOS. |
+| **axiom-foundation-models-ref** | On-device AI, @Generable, LanguageModelSession | Complete Foundation Models framework reference (iOS 26+). |
+| **axiom-swift-testing** | Writing unit tests, Swift Testing framework | @Test/@Suite macros, #expect/#require, parameterized tests, fast test setup. |
+| **axiom-swiftdata** | @Model, @Query, ModelContext, CloudKit | SwiftData persistence patterns and iOS 26+ features. |
+| **axiom-swiftui-26-ref** | iOS 26 SwiftUI features | Liquid Glass, @Animatable, WebView, rich text editing, 3D spatial layout. |
+| **axiom-swiftui-debugging** | View not updating, preview crashes, layout issues | Diagnostic decision trees for SwiftUI debugging. |
 
 ### MCP Server
 
@@ -38,23 +61,17 @@ claude plugin install workflow-tools@workflow-tools
 
 ## Development
 
-This plugin is synced from the [workflow-systems](https://github.com/Foxtrottwist/workflow-systems) monorepo. Skills and the MCP server live in their canonical locations there — this repo holds the distributable copies.
+Skills are edited directly in this repo — it is the canonical source. The MCP server source lives in `mcp-servers/shortcuts-mcp` in the [workflow-systems](https://github.com/Foxtrottwist/workflow-systems) monorepo and is built into this repo via `sync.sh`.
 
-### Updating
+### Updating MCP artifacts
 
 From the workflow-systems monorepo:
 
 ```bash
 cd plugins/workflow-tools
-./sync.sh    # copies skills + rebuilds MCP server
+./sync.sh    # rebuilds MCP server artifacts
 ./build.sh   # validates plugin structure
 ```
-
-`sync.sh` handles:
-- Copying skill files from canonical sources (excluding dev artifacts)
-- Building shortcuts-mcp with pnpm
-- Installing production-only dependencies
-- Cleaning test files and lockfiles from the dist
 
 ### Local testing
 
@@ -74,25 +91,34 @@ workflow-tools/
 ├── .mcp.json                # MCP server configuration
 ├── skills/
 │   ├── iter/
-│   ├── write/
+│   ├── writing/
 │   ├── prompt-dev/
+│   ├── sharpen/
 │   ├── chat-migration/
 │   ├── code-audit/
 │   ├── azure-devops/
-│   └── skill-creator/       # Anthropic, Apache 2.0
+│   ├── tdd/
+│   ├── systematic-debugging/
+│   ├── worktree/
+│   ├── swift-dev/
+│   ├── swift-concurrency/
+│   ├── swiftui-expert-skill/
+│   ├── swift-conventions/
+│   ├── axiom-accessibility-diag/
+│   ├── axiom-foundation-models-ref/
+│   ├── axiom-swift-testing/
+│   ├── axiom-swiftdata/
+│   ├── axiom-swiftui-26-ref/
+│   └── axiom-swiftui-debugging/
 ├── mcp-servers/
 │   └── shortcuts-mcp/
 │       ├── dist/            # Compiled server
 │       ├── node_modules/    # Production deps
 │       └── package.json
-├── sync.sh                  # Sync from monorepo
+├── sync.sh                  # Build MCP artifacts
 ├── build.sh                 # Validate structure
 └── LICENSE
 ```
-
-## Attribution
-
-**skill-creator** is derived from [anthropic-skills](https://github.com/anthropics/anthropic-skills) by Anthropic, licensed under the Apache License 2.0. See `skills/skill-creator/LICENSE.txt` for the full license text.
 
 ## License
 

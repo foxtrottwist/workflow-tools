@@ -1,52 +1,14 @@
 #!/usr/bin/env bash
-# Syncs skills and builds MCP server artifacts from workflow-systems into the plugin.
+# Rebuilds MCP server artifacts from workflow-systems into the plugin.
+# Skills are edited directly in the plugin — no syncing needed.
 # Run locally before committing/pushing the plugin repo.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS=(iter writing prompt-dev chat-migration code-audit azure-devops)
-SKILLS_SRC="$SCRIPT_DIR/../../skills"
-SKILLS_DEST="$SCRIPT_DIR/skills"
 MCP_SRC="$SCRIPT_DIR/../../mcp-servers/shortcuts-mcp"
 MCP_DEST="$SCRIPT_DIR/mcp-servers/shortcuts-mcp"
 
-echo "==> Syncing workflow-tools plugin"
-
-# --- Skills ---
-rm -rf "$SKILLS_DEST"
-mkdir -p "$SKILLS_DEST"
-
-for skill in "${SKILLS[@]}"; do
-  if [ ! -d "$SKILLS_SRC/$skill" ]; then
-    echo "ERROR: Skill not found: $SKILLS_SRC/$skill"
-    exit 1
-  fi
-
-  echo "  Syncing skill: $skill"
-  rsync -a --delete \
-    --exclude='.git' \
-    --exclude='.github' \
-    --exclude='.DS_Store' \
-    --exclude='README.md' \
-    --exclude='LICENSE' \
-    --exclude='*-analysis.md' \
-    "$SKILLS_SRC/$skill/" "$SKILLS_DEST/$skill/"
-done
-
-# --- skill-creator (external, Apache 2.0) ---
-SKILL_CREATOR_SRC="$SCRIPT_DIR/../../external/anthropic-skills/skills/skill-creator"
-if [ ! -d "$SKILL_CREATOR_SRC" ]; then
-  echo "ERROR: skill-creator not found: $SKILL_CREATOR_SRC"
-  exit 1
-fi
-
-echo "  Syncing skill: skill-creator (external)"
-rsync -a --delete \
-  --exclude='.git' \
-  --exclude='.github' \
-  --exclude='.DS_Store' \
-  --exclude='README.md' \
-  "$SKILL_CREATOR_SRC/" "$SKILLS_DEST/skill-creator/"
+echo "==> Building workflow-tools plugin artifacts"
 
 # --- MCP Server (build + copy artifacts) ---
 if [ ! -d "$MCP_SRC" ]; then
@@ -84,23 +46,7 @@ rm -f "$MCP_DEST/pnpm-lock.yaml" "$MCP_DEST/package-lock.json"
 
 # --- Summary ---
 echo ""
-echo "==> Sync complete"
-echo ""
-echo "Skills:"
-for skill in "${SKILLS[@]}"; do
-  if [ -f "$SKILLS_DEST/$skill/SKILL.md" ]; then
-    echo "  + $skill"
-  else
-    echo "  ! $skill (MISSING SKILL.md)"
-    exit 1
-  fi
-done
-if [ -f "$SKILLS_DEST/skill-creator/SKILL.md" ]; then
-  echo "  + skill-creator (external, Apache 2.0)"
-else
-  echo "  ! skill-creator (MISSING SKILL.md)"
-  exit 1
-fi
+echo "==> Build complete"
 echo ""
 echo "MCP Servers:"
 if [ -f "$MCP_DEST/dist/server.js" ]; then
@@ -110,4 +56,4 @@ else
   exit 1
 fi
 echo ""
-echo "Ready to commit and push."
+echo "Run build.sh to validate the full plugin structure."

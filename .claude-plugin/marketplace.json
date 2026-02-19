@@ -1,14 +1,14 @@
 {
   "name": "workflow-tools",
-  "description": "Productivity and development workflow toolkit with task orchestration, TDD discipline, systematic debugging, git worktree isolation, writing quality standards, prompt development, intent refinement, context migration, code auditing, Azure DevOps operations, skill creation, Swift/iOS development skills, and macOS Shortcuts automation.",
+  "description": "Productivity and development workflow toolkit with task orchestration, TDD discipline, systematic debugging, git worktree isolation, writing quality standards, prompt development, intent refinement, context migration, code auditing, Azure DevOps operations, Swift/iOS development skills, and macOS Shortcuts automation.",
   "owner": {
     "name": "Law Horne"
   },
   "plugins": [
     {
       "name": "workflow-tools",
-      "description": "Twenty-one skills for productivity workflows and Swift/iOS development. Includes iter, writing, prompt-dev, sharpen, chat-migration, code-audit, azure-devops, skill-creator, tdd, systematic-debugging, worktree, plus swift-dev hub with 9 specialist skills (SwiftUI, SwiftData, concurrency, accessibility, Swift Testing, Foundation Models). Bundled macOS Shortcuts MCP server.",
-      "version": "0.6.0",
+      "description": "Twenty skills for productivity workflows and Swift/iOS development. Includes iter, writing, prompt-dev, sharpen, chat-migration, code-audit, azure-devops, tdd, systematic-debugging, worktree, plus swift-dev hub with 9 specialist skills (SwiftUI, SwiftData, concurrency, accessibility, Swift Testing, Foundation Models). Bundled macOS Shortcuts MCP server.",
+      "version": "0.7.0",
       "source": "./",
       "repository": "https://github.com/Foxtrottwist/workflow-tools",
       "license": "MIT",
@@ -23,7 +23,7 @@
         "prompt-development",
         "documentation-audit",
         "azure-devops",
-        "skill-creation",
+
         "intent-refinement",
         "macos-shortcuts",
         "swift",
