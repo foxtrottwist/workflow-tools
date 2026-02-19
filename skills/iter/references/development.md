@@ -53,24 +53,44 @@ Native model routing handles the common case. Use explicit overrides for cost op
 
 ## Programmatic Gates
 
-Run these checks after every completion attempt:
+Run the gate script after every completion attempt:
 
 ```bash
-# Type checking (language-dependent)
-tsc --noEmit                    # TypeScript
-swift build                     # Swift
-cargo check                     # Rust
-
-# Linting
-eslint {files}                  # JS/TS
-swiftlint lint {files}          # Swift
-
-# Tests
-npm test -- --related {files}   # Jest
-swift test --filter {module}    # Swift
+scripts/verify-gate.sh <task-dir> <language>
+# language: typescript | swift | rust | python
+# Writes gate-result.local.json to <task-dir>
+# Exit 0 = all passed, exit 1 = failures (details in JSON)
 ```
 
-If programmatic checks fail, back to implementation loop immediately.
+If any check fails, back to implementation loop immediately. The JSON output in `gate-result.local.json` contains per-check results with command output for debugging.
+
+### Individual checks by language
+
+| Language | Build | Lint | Test |
+|----------|-------|------|------|
+| TypeScript | `tsc --noEmit` | `eslint .` | `vitest run` or `npm test` |
+| Swift | `swift build` | `swiftlint lint` | `swift test` |
+| Rust | `cargo check` | `cargo clippy -- -D warnings` | `cargo test` |
+| Python | `mypy .` | `ruff check .` | `pytest` |
+
+## JSON Output Convention
+
+All scripts that produce structured results write to `*.local.json` files in the task's state directory. The schema is flat with a checks results array:
+
+```json
+{
+  "script": "verify-gate",
+  "timestamp": "2024-01-01T00:00:00Z",
+  "language": "typescript",
+  "checks": [
+    {"name": "build", "command": "tsc --noEmit", "passed": true, "duration_ms": 1234},
+    {"name": "lint", "command": "eslint .", "passed": false, "output": "...truncated to 2000 chars..."}
+  ],
+  "summary": {"total": 3, "passed": 2, "failed": 1}
+}
+```
+
+Naming pattern: `<script-name>.local.json` (e.g., `gate-result.local.json`). The `*.local` gitignore pattern covers these files — they are ephemeral state, not tracked artifacts.
 
 ## Test Gate
 

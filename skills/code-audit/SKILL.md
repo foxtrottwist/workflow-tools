@@ -88,7 +88,7 @@ Each subagent:
 - Split partitions >20 files
 
 **After completion:**
-- Aggregate findings into `findings.md`
+- Execute `scripts/aggregate-findings.py .code-audit.local/{project}/` to produce `findings.md` from partition outputs. Review the aggregated output for cross-cutting concerns before proceeding to verification.
 - Update `state.json` with completed partitions
 - Append session to `progress.md`
 

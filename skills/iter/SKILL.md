@@ -171,6 +171,7 @@ Before ending a session, check if `.claude/guardrails.md` exists. If it does, re
 | [development.md](references/development.md) | Dev mode — task format, gates, model selection |
 | [knowledge.md](references/knowledge.md) | Knowledge mode — phase templates (R/D/A/P) |
 | [verification.md](references/verification.md) | After DONE — verification hierarchy, stub detection |
+| [scripts/verify-gate.sh](scripts/verify-gate.sh) | Programmatic gate runner — build/lint/test, outputs gate-result.local.json |
 
 ## Commands
 

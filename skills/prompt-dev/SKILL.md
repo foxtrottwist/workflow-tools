@@ -92,15 +92,17 @@ Update `state.json`: `{ "phase": "validate" }`
 
 ## Phase 5: Validate
 
+Before running the full quality checklist, execute `scripts/validate-template.sh <template-path>`. Items marked PASS can be skipped — focus inference on judgment items.
+
 Final check against quality checklist:
 
-- [ ] Task context clearly defined
-- [ ] Constraints specific and actionable
-- [ ] Input structure uses XML when appropriate
-- [ ] Output format appropriate for usage context
-- [ ] No unnecessary process instructions
-- [ ] Success criteria measurable
-- [ ] No prohibited terms (see conventions.md)
+- [ ] Task context clearly defined *(mechanical)*
+- [ ] Constraints specific and actionable *(judgment)*
+- [ ] Input structure uses XML when appropriate *(mechanical)*
+- [ ] Output format appropriate for usage context *(judgment)*
+- [ ] No unnecessary process instructions *(mechanical)*
+- [ ] Success criteria measurable *(judgment)*
+- [ ] No prohibited terms (see conventions.md) *(mechanical)*
 - [ ] Tested with real cases
 
 **If all pass:**

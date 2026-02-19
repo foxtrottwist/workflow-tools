@@ -62,11 +62,13 @@ This creates **work consensus**: two independent agents, both given the same man
 
 **What it is:** Automated, objective verification.
 
+Run via `scripts/verify-gate.sh <task-dir> <language>`. Writes `gate-result.local.json` to the task directory with per-check pass/fail results. Exit 0 = all passed; exit 1 = failures.
+
 | Check | Purpose | Example |
 |-------|---------|---------|
 | Build | Code compiles | `swift build`, `tsc`, `cargo check` |
 | Types | Type safety | `tsc --noEmit`, `mypy` |
-| Lint | Style/patterns | `swiftlint`, `eslint`, `rustfmt` |
+| Lint | Style/patterns | `swiftlint`, `eslint`, `ruff` |
 | Tests | Behavior | `swift test`, `npm test`, `cargo test` |
 
 **Output:** Pass/fail for each check. All must pass to proceed.
@@ -96,6 +98,18 @@ Task tool call:
 **When to require:** Always. Every task/phase gets N+1 regardless of complexity.
 
 **Why this works:** Two independent agents, same mandate, both concluding done = consensus.
+
+---
+
+### Post-Confirmation Programmatic Gate (Development Only)
+
+After the confirmation pass declares DONE, run `scripts/verify-gate.sh` again before proceeding to the Verification Agent. The confirmation agent may have modified code to fill gaps — this gate ensures those changes haven't broken what previously passed.
+
+```bash
+scripts/verify-gate.sh <task-dir> <language>
+```
+
+If this gate fails, treat it as a failed confirmation: the confirmation agent's changes introduced regressions. Send the failing check output back to an implementation agent and re-run confirmation.
 
 ---
 

@@ -67,6 +67,7 @@ For PR review workflows, prefer `scripts/az-pr.sh` — one Bash call instead of 
 | `overview <pr-id>` | Full overview: context + reviewers + threads |
 | `files <pr-id>` | Changed files list |
 | `diff <pr-id>` | Full diff via git |
+| `review-actions <pr-id> <actions.json>` | Execute batch writes: comments, resolutions, vote |
 
 ```bash
 # Typical review start — one call gets everything
@@ -74,6 +75,55 @@ scripts/az-pr.sh overview 12345
 ```
 
 The script derives the project name from the PR itself (via `repository.project.name`), so it works correctly across repos without relying on `az devops configure` defaults.
+
+## Batch Write Workflow
+
+Use `review-actions` to execute multiple write operations from a single JSON file. This consolidates comments, resolutions, and a vote into one auditable step.
+
+### Action Plan Format
+
+```json
+{
+  "comments": [
+    {"file": "src/Foo.swift", "line": 42, "content": "Consider using a computed property here."},
+    {"content": "Overall looks good — a few inline notes to address."}
+  ],
+  "resolutions": [12, 15, 18],
+  "vote": 10
+}
+```
+
+- `comments` — Array of comment objects. Include `file` and `line` for file-specific threads; omit both for a general PR comment.
+- `resolutions` — Array of thread IDs to mark as `fixed`.
+- `vote` — Integer vote code: `10` approved, `5` approved with suggestions, `0` reset, `-5` waiting for author, `-10` rejected. Omit to skip voting.
+
+### Workflow
+
+1. **Generate action plan** — During review, build the JSON action plan: comments to post, thread IDs to resolve, and a vote.
+2. **Confirm with user** — Use AskUserQuestion to show the plan and get explicit confirmation before writing anything. Include comment text, thread IDs being resolved, and the vote value.
+3. **Execute** — Run the subcommand with the confirmed plan file:
+   ```bash
+   scripts/az-pr.sh review-actions 12345 /path/to/actions.json
+   ```
+4. **Review results** — The command outputs a JSON summary. Check `summary.failed` — if non-zero, inspect the individual check entries for details.
+
+### Output Format
+
+```json
+{
+  "script": "review-actions",
+  "timestamp": "2026-02-19T14:00:00Z",
+  "checks": [
+    {"name": "comment_1", "passed": true, "details": "File comment on src/Foo.swift:42"},
+    {"name": "comment_2", "passed": true, "details": "General comment"},
+    {"name": "resolve_12", "passed": true},
+    {"name": "resolve_15", "passed": true},
+    {"name": "resolve_18", "passed": true},
+    {"name": "vote", "passed": true, "details": "Vote set to 10 (approve)"}
+  ],
+  "summary": {"total": 6, "passed": 6, "failed": 0}
+}
+```
 
 ## Project Discovery
 

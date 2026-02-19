@@ -82,11 +82,15 @@ Per feedback round:
 4. Present updated version — repeat until user signals done
 
 ### Phase: Validate
+
+Before manual quality review, execute `scripts/check-standards.sh <draft-path>`. Mechanical checks (prohibited terms, marketing tone) are handled by the script. Focus inference on: voice authenticity, claim backing, and the 2-of-3 criteria assessment (actionable, evidence-based, problem-solving).
+
 Check against standards:
-- [ ] No prohibited terms
-- [ ] Authentic voice (not marketing)
-- [ ] Claims backed by specifics
-- [ ] Meets 2 of 3: actionable, evidence-based, problem-solving
+- [ ] No prohibited terms (mechanical — script)
+- [ ] No marketing tone phrases (mechanical — script)
+- [ ] Authentic voice (not marketing) (judgment)
+- [ ] Claims backed by specifics (judgment)
+- [ ] Meets 2 of 3: actionable, evidence-based, problem-solving (judgment)
 
 Present final version.
 
