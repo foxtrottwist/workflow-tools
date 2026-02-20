@@ -143,7 +143,7 @@ options:
   - label: "Invoke a workflow"
     description: "Hand off to iter, writing, prompt-dev, or another skill"
   - label: "Save to disk"
-    description: "Write as a *.local.md file for future use"
+    description: "Write to .workflow.local/sharpen/ for future use"
   - label: "Show inline + save"
     description: "Display now and also write to disk"
 ```
@@ -152,7 +152,7 @@ options:
 
 **Invoke a workflow:** Suggest the best-fit skill based on the refined intent. Present the suggested invocation for approval before triggering.
 
-**Save to disk:** Write to `{slug}.local.md` in the current working directory. Use a descriptive slug derived from the intent (e.g., `auth-refactor-spec.local.md`, `api-research-brief.local.md`).
+**Save to disk:** Write to `.workflow.local/sharpen/{slug}.md`. Use a descriptive slug derived from the intent (e.g., `auth-refactor-spec.md`, `api-research-brief.md`).
 
 **Show inline + save:** Both — display first, then write to disk.
 

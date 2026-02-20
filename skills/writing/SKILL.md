@@ -9,7 +9,7 @@ Written communication following quality standards. Three paths based on task com
 
 ## Resume Check
 
-Every invocation, check for existing state in `.writing.local/`.
+Every invocation, check for existing state in `.workflow.local/writing/`.
 
 **If state exists**, read `state.json` and use **AskUserQuestion** to offer resume or start fresh — include the content type and current phase as context so the user knows what they're resuming.
 
@@ -63,7 +63,7 @@ Create initial version applying:
 - Context-specific tone (professional, technical, educational)
 - Structure appropriate to content type
 
-Write to `.writing.local/{slug}/draft.md`
+Write to `.workflow.local/writing/{slug}/draft.md`
 
 ### Phase: Refine
 Present draft and use **AskUserQuestion** to gather structured feedback:
@@ -97,7 +97,7 @@ Present final version.
 ## State Files (Iterative Only)
 
 ```
-.writing.local/{slug}/
+.workflow.local/writing/{slug}/
 ├── state.json      # Current phase
 ├── brief.md        # Requirements
 ├── draft.md        # Current version

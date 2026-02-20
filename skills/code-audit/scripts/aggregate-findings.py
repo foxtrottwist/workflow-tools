@@ -145,7 +145,7 @@ def build_summary_json(checks, total, counts, partitions_read, duplicates_remove
 def main():
     if len(sys.argv) != 2:
         print("Usage: aggregate-findings.py <audit-dir>", file=sys.stderr)
-        print("  e.g. aggregate-findings.py .code-audit.local/my-project/", file=sys.stderr)
+        print("  e.g. aggregate-findings.py .workflow.local/code-audit/my-project/", file=sys.stderr)
         sys.exit(1)
 
     audit_dir = sys.argv[1]

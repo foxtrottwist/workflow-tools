@@ -26,7 +26,7 @@ RESUME?  →  SCOPE  →  PARTITION  →  REVIEW  →  VERIFY  →  PROPOSE
 
 ## Phase 0: Resume Check
 
-Every invocation, check for existing state in `.code-audit.local/`.
+Every invocation, check for existing state in `.workflow.local/code-audit/`.
 
 **If state exists**, read `state.json` and present:
 ```
@@ -51,7 +51,7 @@ Infer audit type and focus from the request context:
 Use **AskUserQuestion** only when scope or focus is genuinely ambiguous.
 
 **Output:**
-- Create `.code-audit.local/{project-slug}/`
+- Create `.workflow.local/code-audit/{project-slug}/`
 - Write `brief.md` with scope
 - Write `state.json`: `{ "phase": "partition" }`
 
@@ -88,7 +88,7 @@ Each subagent:
 - Split partitions >20 files
 
 **After completion:**
-- Execute `scripts/aggregate-findings.py .code-audit.local/{project}/` to produce `findings.md` from partition outputs. Review the aggregated output for cross-cutting concerns before proceeding to verification.
+- Execute `scripts/aggregate-findings.py .workflow.local/code-audit/{project}/` to produce `findings.md` from partition outputs. Review the aggregated output for cross-cutting concerns before proceeding to verification.
 - Update `state.json` with completed partitions
 - Append session to `progress.md`
 
@@ -145,7 +145,7 @@ Options:
 ## State Files
 
 ```
-.code-audit.local/{project-slug}/
+.workflow.local/code-audit/{project-slug}/
 ├── state.json       # Current phase, partition status
 ├── brief.md         # Audit scope and requirements
 ├── partitions.md    # Review units

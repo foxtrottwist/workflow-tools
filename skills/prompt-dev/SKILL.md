@@ -9,7 +9,7 @@ Iterative prompt template creation using the DISCOVER → DRAFT → TEST → REF
 
 ## Resume Check
 
-Every invocation, check for existing state in `.prompt-dev.local/`.
+Every invocation, check for existing state in `.workflow.local/prompt-dev/`.
 
 **If state exists**, read `state.json` and present status. Offer to resume, start fresh, or show current template.
 
@@ -26,7 +26,7 @@ Infer requirements from the request context:
 Use **AskUserQuestion** only for genuine gaps the request doesn't clarify.
 
 **Output:**
-- Create `.prompt-dev.local/{template-slug}/`
+- Create `.workflow.local/prompt-dev/{template-slug}/`
 - Write `brief.md` with requirements
 - Write `state.json`: `{ "phase": "draft" }`
 
@@ -107,7 +107,7 @@ Final check against quality checklist:
 
 **If all pass:**
 - Present final template
-- Archive to `.prompt-dev.local/archive/{slug}/` if requested
+- Archive to `.workflow.local/prompt-dev/archive/{slug}/` if requested
 - Update `state.json`: `{ "phase": "complete" }`
 
 **If issues found:**
@@ -116,7 +116,7 @@ Final check against quality checklist:
 ## State Files
 
 ```
-.prompt-dev.local/{template-slug}/
+.workflow.local/prompt-dev/{template-slug}/
 ├── state.json      # Current phase
 ├── brief.md        # Requirements from discovery
 ├── template.md     # Current template version
