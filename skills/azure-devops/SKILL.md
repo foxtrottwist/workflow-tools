@@ -56,7 +56,16 @@ Use AskUserQuestion (not just the Bash permission prompt) to give the user clear
 
 ## Wrapper Script
 
-For PR review workflows, prefer `scripts/az-pr.sh` — one Bash call instead of 6+ separate `az` commands.
+The script is bundled with this skill. At the top of every session, Claude Code injects a `Base directory for this skill:` line — use that to construct the absolute path:
+
+```bash
+SKILL_DIR="<base-dir-from-session-header>"
+"$SKILL_DIR/scripts/az-pr.sh" overview 12345
+```
+
+Never call it as `scripts/az-pr.sh` (relative path) — that looks in the project directory, not the skill bundle.
+
+For PR review workflows, prefer this script over raw `az` commands — one call instead of 6+.
 
 | Subcommand | Output |
 |---|---|
@@ -71,7 +80,7 @@ For PR review workflows, prefer `scripts/az-pr.sh` — one Bash call instead of 
 
 ```bash
 # Typical review start — one call gets everything
-scripts/az-pr.sh overview 12345
+"$SKILL_DIR/scripts/az-pr.sh" overview 12345
 ```
 
 The script derives the project name from the PR itself (via `repository.project.name`), so it works correctly across repos without relying on `az devops configure` defaults.
@@ -103,7 +112,7 @@ Use `review-actions` to execute multiple write operations from a single JSON fil
 2. **Confirm with user** — Use AskUserQuestion to show the plan and get explicit confirmation before writing anything. Include comment text, thread IDs being resolved, and the vote value.
 3. **Execute** — Run the subcommand with the confirmed plan file:
    ```bash
-   scripts/az-pr.sh review-actions 12345 /path/to/actions.json
+   "$SKILL_DIR/scripts/az-pr.sh" review-actions 12345 /path/to/actions.json
    ```
 4. **Review results** — The command outputs a JSON summary. Check `summary.failed` — if non-zero, inspect the individual check entries for details.
 
@@ -195,7 +204,8 @@ az devops invoke \
 ### PR File Changes
 
 ```bash
-az repos pr diff --id {PR_ID} -o json 2>/dev/null | jq -r '.changes[] | "\(.changeType): \(.item.path)"'
+# az repos pr diff is unreliable — use git diff instead
+"$SKILL_DIR/scripts/az-pr.sh" files {PR_ID}
 ```
 
 ### Create Comment
@@ -258,7 +268,7 @@ REPO_ID=$(az repos pr show --id {PR_ID} --query 'repository.id' -o tsv)
 PROJECT=$(az repos pr show --id {PR_ID} --query 'repository.project.name' -o tsv)
 ```
 
-Or use the wrapper script — `scripts/az-pr.sh context {PR_ID}` returns both along with branch info.
+Or use the wrapper script — `"$SKILL_DIR/scripts/az-pr.sh" context {PR_ID}` returns both along with branch info.
 
 ## JSON Output
 
@@ -288,11 +298,16 @@ Recipes use `2>/dev/null` before `jq` for brevity. See `references/error-handlin
 
 5. **Verify writes** — POST/PATCH responses include the created resource. Check `.id` is non-null to confirm the operation succeeded. See `references/error-handling.md`.
 
-6. **Vote codes are integers** — Map: `10=approved`, `5=approved with suggestions`, `0=no vote`, `-5=waiting`, `-10=rejected`.
+6. **Two vote APIs, two different value formats:**
+   - `az repos pr set-vote` (native CLI) — takes **strings**: `approve`, `approve-with-suggestions`, `reset`, `wait-for-author`, `reject`
+   - `az devops invoke` REST payloads and action plan JSON — take **integers**: `10`, `5`, `0`, `-5`, `-10`
+   The wrapper script handles the integer-to-string mapping automatically in `review-actions`.
 
-7. **API version matters** — Use `--api-version 7.1` or later. Older versions may return different response shapes.
+7. **`az repos pr diff` silently returns nothing** — Don't use it. The `files` subcommand in the wrapper script uses `git fetch` + `git diff --name-status` instead, which is reliable.
 
-8. **`az devops invoke` covers reads and writes** — The permission rule allows both GET and POST/PATCH calls without a Bash prompt. This is intentional — AskUserQuestion gates all writes with full context (comment text, resolution status, etc.) before execution. The Bash prompt would just show a raw command string, which isn't useful for informed approval.
+8. **API version matters** — Use `--api-version 7.1` or later. Older versions may return different response shapes.
+
+9. **`az devops invoke` covers reads and writes** — The permission rule allows both GET and POST/PATCH calls without a Bash prompt. This is intentional — AskUserQuestion gates all writes with full context (comment text, resolution status, etc.) before execution. The Bash prompt would just show a raw command string, which isn't useful for informed approval.
 
 ## Reference
 

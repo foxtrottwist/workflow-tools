@@ -204,8 +204,17 @@ cmd_overview() {
 cmd_files() {
   local pr_id=$1
 
-  az_safe az repos pr diff --id "$pr_id" -o json
-  echo "$AZ_OUT" | jq -r '.changes[] | "\(.changeType): \(.item.path)"'
+  local target source
+  target=$(az repos pr show --id "$pr_id" --query 'targetRefName' -o tsv 2>/dev/null | sed 's|refs/heads/||')
+  source=$(az repos pr show --id "$pr_id" --query 'sourceRefName' -o tsv 2>/dev/null | sed 's|refs/heads/||')
+
+  if [ -z "$target" ] || [ -z "$source" ]; then
+    echo "Error: Could not determine source/target branches for PR $pr_id" >&2
+    return 1
+  fi
+
+  git fetch origin "$target" "$source" 2>/dev/null
+  git diff "origin/$target...origin/$source" --name-status
 }
 
 cmd_diff() {
@@ -294,15 +303,20 @@ cmd_review_actions() {
           }
         }')
 
+      local tmp_body
+      tmp_body=$(mktemp /tmp/az-pr-body-XXXXXX.json)
+      echo "$body" > "$tmp_body"
+
       local rc=0
-      AZ_OUT=$(echo "$body" | az devops invoke \
+      AZ_OUT=$(az devops invoke \
         --area git \
         --resource pullRequestThreads \
         --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId="$pr_id" \
         --api-version 7.1 \
         --http-method POST \
-        --in-file /dev/stdin \
+        --in-file "$tmp_body" \
         -o json 2>/dev/null) || rc=$?
+      rm -f "$tmp_body"
 
       if [ "$rc" -eq 0 ]; then
         local thread_id
@@ -324,15 +338,20 @@ cmd_review_actions() {
           "status": "active"
         }')
 
+      local tmp_body
+      tmp_body=$(mktemp /tmp/az-pr-body-XXXXXX.json)
+      echo "$body" > "$tmp_body"
+
       local rc=0
-      AZ_OUT=$(echo "$body" | az devops invoke \
+      AZ_OUT=$(az devops invoke \
         --area git \
         --resource pullRequestThreads \
         --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId="$pr_id" \
         --api-version 7.1 \
         --http-method POST \
-        --in-file /dev/stdin \
+        --in-file "$tmp_body" \
         -o json 2>/dev/null) || rc=$?
+      rm -f "$tmp_body"
 
       if [ "$rc" -eq 0 ]; then
         local thread_id
@@ -359,15 +378,20 @@ cmd_review_actions() {
     thread_id=$(echo "$actions" | jq -r ".resolutions[$j]")
     local check_name="resolve_${thread_id}"
 
+    local tmp_resolve
+    tmp_resolve=$(mktemp /tmp/az-pr-resolve-XXXXXX.json)
+    printf '{"status":"fixed"}' > "$tmp_resolve"
+
     local rc=0
-    AZ_OUT=$(printf '{"status":"fixed"}' | az devops invoke \
+    AZ_OUT=$(az devops invoke \
       --area git \
       --resource pullRequestThreads \
       --route-parameters project="$PROJECT" repositoryId="$REPO_ID" pullRequestId="$pr_id" threadId="$thread_id" \
       --api-version 7.1 \
       --http-method PATCH \
-      --in-file /dev/stdin \
+      --in-file "$tmp_resolve" \
       -o json 2>/dev/null) || rc=$?
+    rm -f "$tmp_resolve"
 
     if [ "$rc" -eq 0 ]; then
       local status

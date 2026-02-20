@@ -8,7 +8,7 @@
     {
       "name": "workflow-tools",
       "description": "Twenty skills for productivity workflows and Swift/iOS development. Includes iter, writing, prompt-dev, sharpen, chat-migration, code-audit, azure-devops, tdd, systematic-debugging, worktree, plus swift-dev hub with 9 specialist skills (SwiftUI, SwiftData, concurrency, accessibility, Swift Testing, Foundation Models). Bundled macOS Shortcuts MCP server.",
-      "version": "0.7.0",
+      "version": "0.7.1",
       "source": "./",
       "repository": "https://github.com/Foxtrottwist/workflow-tools",
       "license": "MIT",
