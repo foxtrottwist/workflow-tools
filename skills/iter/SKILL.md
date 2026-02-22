@@ -52,11 +52,14 @@ Task tool call:
     Criteria: {acceptance criteria}
     Skill: tdd{, additional skill if mapped}
 
+    Before writing any code, review the codebase you're working in — read existing files, understand patterns and conventions already in use.
+
+    Review the available skills listed in your system reminders. If any skill is relevant to this task (by name alone you can tell — e.g., swift-dev for Swift work, swiftui-expert-skill for SwiftUI, systematic-debugging for bugs), invoke it. Skills provide domain-specific workflows and constraints you won't have otherwise.
+
     Read .claude/guardrails.md for accumulated lessons before starting.
     Invoke the tdd skill — write failing tests before production code (RED-GREEN-REFACTOR).
-    If additional skills are listed, invoke them for domain-specific guidance.
 
-    Work toward the criteria. Commit after completing each criterion — progress must be recoverable if interrupted. Do not batch all changes into a single commit at the end.
+    Work toward the criteria. Commit in logical units — at minimum one commit per task, more if the task has natural boundaries.
     If ALL criteria met, state "DONE" with summary.
     If blocked, state "BLOCKED" with reason.
 ```
@@ -71,10 +74,11 @@ Task tool call:
     Phase: {ID} "{title}"
     Criteria: {acceptance criteria}
     Output: {output_path}
-    Skill: {name, if mapped — omit if none}
+    Before starting, review the codebase or existing material relevant to this phase.
+
+    Review the available skills listed in your system reminders. If any skill is relevant to this phase (by name alone you can tell — e.g., writing for composition, prompt-dev for templates), invoke it. Skills provide domain-specific workflows and constraints you won't have otherwise.
 
     Read .claude/guardrails.md for accumulated lessons before starting.
-    If a skill is listed, invoke it before starting — it provides specialized workflows for this type of work.
 
     Work toward the criteria. Save output to the specified path.
     If ALL criteria met, state "DONE" with summary.

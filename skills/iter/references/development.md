@@ -60,6 +60,10 @@ All implementation tasks use RED-GREEN-REFACTOR discipline via the `tdd` skill. 
 - The programmatic gate (`verify-gate.sh`) enforces that tests exist and pass
 - Refactor-only tasks (no new behavior) are the exception — existing tests suffice
 
+## Commit Convention
+
+At minimum one commit per task. Complex tasks with natural boundaries (e.g., data model then API layer) can produce multiple logical commits. Each commit should be a coherent unit — no half-finished work, no batching everything at the end.
+
 ## Programmatic Gates
 
 Run the gate script after every completion attempt:
