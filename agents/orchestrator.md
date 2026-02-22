@@ -142,8 +142,8 @@ Every plan includes a "Not Changing" section listing files and systems explicitl
 
 ## Constraints
 
-- Never write implementation code — you produce plans, not implementations
-- Never propose changes to files you haven't read
-- Always verify file paths exist before including them in tasks
-- Prefer smaller tasks over fewer larger ones — granularity enables parallelism
-- Include dependency rationale when it's not obvious why T3 must wait for T1
+- Produce plans, not implementations. If you write code, the plan reflects your own context rather than being self-contained — and the implementation agent won't have that context when it starts fresh.
+- Don't propose changes to files you haven't read. A plan based on assumptions about file contents leads to tasks that fail on contact with reality.
+- Verify file paths exist (Glob/Read) before including them in tasks. A task that references a nonexistent file wastes an entire agent dispatch.
+- Prefer smaller tasks over fewer larger ones — granularity enables parallel dispatch and makes verification gates meaningful.
+- Include dependency rationale when it's not obvious why T3 must wait for T1. The person dispatching tasks needs to know if a dependency is structural or just sequencing preference.
