@@ -5,6 +5,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILLS=(iter writing prompt-dev chat-migration code-audit azure-devops sharpen tdd systematic-debugging worktree swift-dev swift-concurrency swiftui-expert-skill swift-conventions axiom-accessibility-diag axiom-foundation-models-ref axiom-swift-testing axiom-swiftdata axiom-swiftui-26-ref axiom-swiftui-debugging)
+AGENTS=(researcher verifier orchestrator editor)
 MCP_DIR="$SCRIPT_DIR/mcp-servers/shortcuts-mcp"
 
 echo "==> Validating workflow-tools plugin"
@@ -33,6 +34,16 @@ for skill in "${SKILLS[@]}"; do
     echo "  OK: skills/$skill"
   else
     echo "  FAIL: skills/$skill/SKILL.md missing"
+    errors=$((errors + 1))
+  fi
+done
+
+# Agents
+for agent in "${AGENTS[@]}"; do
+  if [ -f "$SCRIPT_DIR/agents/$agent.md" ]; then
+    echo "  OK: agents/$agent"
+  else
+    echo "  FAIL: agents/$agent.md missing"
     errors=$((errors + 1))
   fi
 done

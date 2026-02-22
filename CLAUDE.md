@@ -2,7 +2,7 @@
 
 ## Overview
 
-Claude Code plugin packaging twenty skills and a macOS Shortcuts MCP server. This repo is the **canonical source** for all bundled skills — edit skills directly here.
+Claude Code plugin packaging twenty skills, four specialized agents, and a macOS Shortcuts MCP server. This repo is the **canonical source** for all bundled skills and agents — edit them directly here.
 
 **Productivity skills:** iter, writing, prompt-dev, sharpen, chat-migration, code-audit, azure-devops.
 
@@ -36,6 +36,26 @@ Use semver: patch for bug fixes, minor for new/updated skills, major for breakin
 - Schema URL 404 — `$schema` in marketplace.json doesn't resolve ([#9686](https://github.com/anthropics/claude-code/issues/9686))
 - Submodules not cloned during marketplace install ([#17293](https://github.com/anthropics/claude-code/issues/17293)) — not an issue here since plugin ships flat copies
 - Reserved names blocked: `claude-code-marketplace`, `claude-plugins-official`, `anthropic-marketplace`, `anthropic-plugins`, `agent-skills`, `life-sciences`
+
+## Agents
+
+Four specialized agents with restricted tool access and focused mandates. Agents provide behavioral constraints (how to operate) while skills provide domain knowledge (what to do).
+
+| Agent | Role | Model | Pairs With |
+|-------|------|-------|------------|
+| researcher | Information gathering and synthesis | sonnet | iter (knowledge mode), general exploration |
+| verifier | Adversarial review against acceptance criteria | sonnet | iter (verification gates) |
+| orchestrator | Task decomposition and planning | opus | iter (development and knowledge modes) |
+| editor | Editorial review against writing standards | sonnet | writing skill |
+
+Agents live at `agents/<name>.md` at plugin root. They use YAML frontmatter for configuration (name, description, tools, model, skills) and markdown body for system prompt.
+
+## Adding a New Agent
+
+1. Create agent file at `agents/<name>.md` with frontmatter (name, description, tools, model) and system prompt
+2. Add agent name to the `AGENTS` array in `build.sh`
+3. Bump version in both `plugin.json` and `marketplace.json`
+4. Run `bash build.sh` to validate
 
 ## Adding a New Skill
 
