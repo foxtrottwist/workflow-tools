@@ -31,7 +31,7 @@ Plan mode is required. Enter plan mode immediately when this skill is invoked �
 **Discovery**: Use AskUserQuestion with mode-specific templates from [references/interview.md](references/interview.md).
 
 **Decompose**: Break into atomic units using mode-specific templates:
-- **Development**: Tasks (T1, T2, ...) with files, criteria, model selection. See [references/development.md](references/development.md).
+- **Development**: Tasks (T1, T2, ...) with files, criteria, model selection. All implementation tasks map to the `tdd` skill by default — tests before production code. See [references/development.md](references/development.md).
 - **Knowledge**: Phases using domain templates (R1-R4, D1-D4, A1-A4, P1-P4). See [references/knowledge.md](references/knowledge.md).
 
 **Skill mapping**: Cross-reference decomposed units against available skills (listed in the conversation's system reminders). If a unit aligns with a skill's triggers, annotate it with the skill name in the plan. Mapped tasks should invoke the skill — it provides specialized workflows and domain knowledge that general-purpose prompts lack.
@@ -50,10 +50,11 @@ Task tool call:
     Task: T{N} "{title}"
     Files: {paths}
     Criteria: {acceptance criteria}
-    Skill: {name, if mapped — omit if none}
+    Skill: tdd{, additional skill if mapped}
 
     Read .claude/guardrails.md for accumulated lessons before starting.
-    If a skill is listed, invoke it before starting — it provides specialized workflows for this type of work.
+    Invoke the tdd skill — write failing tests before production code (RED-GREEN-REFACTOR).
+    If additional skills are listed, invoke them for domain-specific guidance.
 
     Work toward the criteria. Commit after completing each criterion — progress must be recoverable if interrupted. Do not batch all changes into a single commit at the end.
     If ALL criteria met, state "DONE" with summary.

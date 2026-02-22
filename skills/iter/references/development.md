@@ -51,6 +51,15 @@ Native model routing handles the common case. Use explicit overrides for cost op
 
 **Default**: sonnet
 
+## TDD Integration
+
+All implementation tasks use RED-GREEN-REFACTOR discipline via the `tdd` skill. This is not optional for development mode.
+
+- Tasks are dispatched with `Skill: tdd` by default
+- Subagents invoke the tdd skill before writing production code
+- The programmatic gate (`verify-gate.sh`) enforces that tests exist and pass
+- Refactor-only tasks (no new behavior) are the exception — existing tests suffice
+
 ## Programmatic Gates
 
 Run the gate script after every completion attempt:
