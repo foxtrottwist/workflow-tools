@@ -12,7 +12,7 @@ Claude Code plugin packaging twenty skills, four specialized agents, and a macOS
 
 ## Key Commands
 
-- `./build.sh` — validates plugin structure (skills, MCP artifacts, plugin.json)
+- `./build.sh` — validates plugin structure (skills, agents, MCP artifacts, plugin.json)
 - `./sync.sh` — rebuilds MCP server artifacts from monorepo source (skills are edited directly here)
 - `claude --plugin-dir .` — load plugin locally without installing
 - `claude --debug` — debug plugin loading/registration
@@ -25,7 +25,7 @@ Use semver: patch for bug fixes, minor for new/updated skills, major for breakin
 
 ## Plugin Validation
 
-`claude plugin validate .` validates marketplace JSON. `build.sh` is the structural validation layer — checks for `.claude-plugin/plugin.json`, `.mcp.json`, skill SKILL.md files, and MCP server artifacts.
+`claude plugin validate .` validates marketplace JSON. `build.sh` is the structural validation layer — checks for `.claude-plugin/plugin.json`, `.mcp.json`, skill SKILL.md files, agent .md files, and MCP server artifacts.
 
 ## Environment
 
