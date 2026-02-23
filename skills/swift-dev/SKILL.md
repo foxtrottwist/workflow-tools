@@ -12,7 +12,6 @@ Consult specialist skills for detailed guidance. Read the SKILL.md (and any `ref
 
 | Skill | When to consult |
 |-------|----------------|
-| `swift-conventions` | Any Swift/SwiftUI code — quick-reference standards and Foundation Models API |
 | `swiftui-expert-skill` | Building or reviewing SwiftUI views — state, animations, performance, Liquid Glass |
 | `swift-concurrency` | Async/await, actors, sendable, tasks, Swift 6 migration |
 | `axiom-swiftui-debugging` | View not updating, preview crashes, layout issues — use the decision trees |
@@ -21,6 +20,19 @@ Consult specialist skills for detailed guidance. Read the SKILL.md (and any `ref
 | `axiom-accessibility-diag` | VoiceOver issues, Dynamic Type, contrast, touch targets, App Store review prep |
 | `axiom-foundation-models-ref` | Foundation Models — LanguageModelSession, @Generable, @Guide, Tool protocol, streaming |
 | `axiom-swiftdata` | SwiftData — @Model, @Query, @Relationship, CloudKit, migration, performance |
+
+### Foundation Models References
+
+When writing or reviewing Foundation Models code, read the applicable references first:
+
+| Task | Read |
+|------|------|
+| Any FM work | [references/foundation-models.md](references/foundation-models.md) |
+| Structured output (`@Generable`) | [references/foundation-models-generable.md](references/foundation-models-generable.md) |
+| Tool definitions | [references/foundation-models-tools.md](references/foundation-models-tools.md) |
+| Performance issues or optimization | [references/foundation-models-performance.md](references/foundation-models-performance.md) |
+
+Read multiple references when tasks overlap (e.g., a tool returning `@Generable` types).
 
 ## Swift Rules
 
@@ -37,6 +49,9 @@ Consult specialist skills for detailed guidance. Read the SKILL.md (and any `ref
 - Prefer `String(localized:)` over `NSLocalizedString`
 - Use `sending` parameter annotation where appropriate for concurrency safety
 - Mark types as `Sendable` when they cross isolation boundaries
+- Prefer Swift-native string methods: `replacing(_:with:)` over `replacingOccurrences(of:with:)`
+- Prefer modern Foundation: `URL.documentsDirectory`, `appending(path:)`
+- Prefer static member lookup: `.circle` over `Circle()`, `.borderedProminent` over `BorderedProminentButtonStyle()`
 
 ## SwiftUI Rules
 
@@ -53,6 +68,15 @@ Consult specialist skills for detailed guidance. Read the SKILL.md (and any `ref
 - Use `ForEach(items.enumerated(), id: \.element.id)` when index is needed — do not wrap in `Array()`
 - Use `scrollTargetBehavior(.viewAligned)` and `scrollTargetLayout()` for snap scrolling
 - `Section("Title") { } footer: { }` doesn't compile — use `Section { } header: { Text("Title") } footer: { }` when both header and footer are needed
+- `onChange` with two parameters or zero — never one-parameter variant
+- `Button` for taps — `onTapGesture()` only when tap location/count needed
+- `Task.sleep(for:)` not `Task.sleep(nanoseconds:)`
+- Never use `UIScreen.main.bounds` for available space
+- Button images need text: `Button("Action", systemImage: "plus", action: handler)`
+- `ImageRenderer` over `UIGraphicsImageRenderer`
+- Number formatting: `Text(value, format: .number.precision(.fractionLength(2)))` — never `String(format:)`
+- Avoid `AnyView` unless required
+- Avoid hardcoded padding/spacing values
 
 ## State Management
 
