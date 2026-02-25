@@ -1,0 +1,92 @@
+{
+  "skill_name": "speak",
+  "evals": [
+    {
+      "id": 1,
+      "name": "explicit-speak",
+      "prompt": "Summarize what I just committed and read it back to me",
+      "expected_output": "Agent checks /v1/status, then POSTs to /v1/audio/speech with a summary as the input field",
+      "files": [],
+      "assertions": [
+        {
+          "name": "checks_status_first",
+          "type": "output_contains",
+          "expected": "curl.*localhost.*7849.*v1/status",
+          "description": "Checks SpokenBite status before speaking"
+        },
+        {
+          "name": "posts_to_speech_endpoint",
+          "type": "output_contains",
+          "expected": "curl.*POST.*v1/audio/speech",
+          "description": "Sends POST request to the speech endpoint"
+        },
+        {
+          "name": "includes_input_field",
+          "type": "output_contains",
+          "expected": "\"input\"",
+          "description": "Request body includes the required input field"
+        },
+        {
+          "name": "uses_json_content_type",
+          "type": "output_contains",
+          "expected": "Content-Type.*application/json",
+          "description": "Sets JSON content type header"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "status-check",
+      "prompt": "Is SpokenBite running?",
+      "expected_output": "Agent calls GET /v1/status and reports the result to the user",
+      "files": [],
+      "assertions": [
+        {
+          "name": "calls_status_endpoint",
+          "type": "output_contains",
+          "expected": "curl.*localhost.*7849.*v1/status",
+          "description": "Calls the status endpoint"
+        },
+        {
+          "name": "no_speech_request",
+          "type": "output_not_contains",
+          "expected": "v1/audio/speech",
+          "description": "Does NOT try to speak text — this is a status check only"
+        },
+        {
+          "name": "reports_tts_status",
+          "type": "output_contains",
+          "expected": "tts|ready|running|status",
+          "description": "Reports TTS readiness information to the user"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "proactive-feedback",
+      "prompt": "Run the test suite and let me know how it goes — I'll be away from my desk, so speak the results",
+      "expected_output": "Agent runs tests, checks /v1/status, then speaks a summary of results via /v1/audio/speech",
+      "files": [],
+      "assertions": [
+        {
+          "name": "checks_status_before_speaking",
+          "type": "output_contains",
+          "expected": "curl.*localhost.*7849.*v1/status",
+          "description": "Checks status before attempting speech"
+        },
+        {
+          "name": "speaks_results",
+          "type": "output_contains",
+          "expected": "curl.*POST.*v1/audio/speech",
+          "description": "Speaks the test results aloud"
+        },
+        {
+          "name": "speech_contains_test_info",
+          "type": "output_contains",
+          "expected": "\"input\".*[Tt]est",
+          "description": "Speech input mentions test results"
+        }
+      ]
+    }
+  ]
+}
