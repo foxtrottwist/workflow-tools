@@ -31,16 +31,18 @@ Plan mode is required. Enter plan mode immediately when this skill is invoked �
 **Discovery**: Use AskUserQuestion with mode-specific templates from [references/interview.md](references/interview.md).
 
 **Decompose**: Break into atomic units using mode-specific templates:
-- **Development**: Tasks (T1, T2, ...) with files, criteria, model selection. All implementation tasks map to the `tdd` skill by default — tests before production code. See [references/development.md](references/development.md).
+- **Development**: Tasks (T1, T2, ...) with files, criteria, weight, dispatch, model selection. All implementation tasks map to the `tdd` skill by default — tests before production code. See [references/development.md](references/development.md).
 - **Knowledge**: Phases using domain templates (R1-R4, D1-D4, A1-A4, P1-P4). See [references/knowledge.md](references/knowledge.md).
 
 **Skill mapping**: Cross-reference decomposed units against available skills (listed in the conversation's system reminders). If a unit aligns with a skill's triggers, annotate it with the skill name in the plan. Mapped tasks should invoke the skill — it provides specialized workflows and domain knowledge that general-purpose prompts lack.
 
 ### 2. Task Dispatch
 
-After plan approval, dispatch each unit via the native Task tool.
+After plan approval, dispatch each unit according to its `dispatch` field. Tasks marked `subagent` use the Task tool. Tasks marked `inline` execute in the primary context — the orchestrator does the work directly, keeping intermediate results visible for downstream decisions.
 
-**Development tasks:**
+This distinction matters most after a context clear between planning and execution. The fresh session reads the plan file and acts on the dispatch annotation without re-deriving the delegation decision.
+
+**Development tasks (dispatch: subagent):**
 ```
 Task tool call:
 - subagent_type: "general-purpose"
@@ -170,13 +172,20 @@ Before ending a session, check if `.claude/guardrails.md` exists. If it does, re
 
 ## Reference Files
 
-| File | When to Read |
-|------|-------------|
-| [interview.md](references/interview.md) | During discovery — question templates |
-| [development.md](references/development.md) | Dev mode — task format, gates, model selection |
-| [knowledge.md](references/knowledge.md) | Knowledge mode — phase templates (R/D/A/P) |
-| [verification.md](references/verification.md) | After DONE — verification hierarchy, stub detection |
-| [scripts/verify-gate.sh](scripts/verify-gate.sh) | Programmatic gate runner — build/lint/test, outputs gate-result.local.json |
+Load references selectively based on detected mode and workflow phase. Not every file is needed on every invocation — skip irrelevant references to keep context focused.
+
+| File | When to Read | Skip When |
+|------|-------------|-----------|
+| [interview.md](references/interview.md) | Plan mode / discovery phase | Task dispatch and verification phases |
+| [development.md](references/development.md) | Development mode — task format, gates, model selection | Knowledge mode |
+| [knowledge.md](references/knowledge.md) | Knowledge mode — phase templates (R/D/A/P) | Development mode |
+| [verification.md](references/verification.md) | After DONE — verification hierarchy, stub detection, recovery patterns | Never skip |
+| [scripts/verify-gate.sh](scripts/verify-gate.sh) | Programmatic gate runner — build/lint/test, outputs gate-result.local.json | Knowledge mode |
+
+**Loading by phase:**
+- **Discovery/planning**: interview.md + the mode-specific reference (development.md or knowledge.md)
+- **Task dispatch**: mode-specific reference only (development.md or knowledge.md)
+- **Verification**: verification.md only
 
 ## Commands
 

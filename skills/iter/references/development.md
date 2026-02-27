@@ -23,6 +23,8 @@ T4 (independent)
   - Files: `path/to/file.ts`
   - Criteria: {measurable acceptance}
   - Depends: none
+  - Weight: light
+  - Dispatch: inline
   - Model: sonnet
   - Max turns: 5
 
@@ -30,9 +32,46 @@ T4 (independent)
   - Files: `path/to/file.ts`, `path/to/other.ts`
   - Criteria: {acceptance}
   - Depends: T1
+  - Weight: standard
+  - Dispatch: subagent
   - Model: sonnet
   - Max turns: 8
 ```
+
+## Task Weight Tiers
+
+The orchestrator assigns a `weight` to each task during decomposition. Weight determines verification depth and turn allocation.
+
+| Weight | Examples | Verification | Max turns |
+|--------|----------|-------------|-----------|
+| **light** | File renames, config changes, dependency bumps, single-line fixes | Programmatic gates only — skip confirmation pass and verification agent | From task spec |
+| **standard** | Feature implementation, bug fixes, refactors touching 2+ files | Full hierarchy: work → gates → confirmation → verification agent | From task spec |
+| **heavy** | Architecture changes, public API modifications, security-sensitive code | Full hierarchy with 2x max_turns on work pass and verification agent | 2x task spec |
+
+### Assignment Signals
+
+Assign weight based on these signals during decomposition:
+
+- **File count**: Single file with mechanical change → light. Multiple files with logic changes → standard or heavy.
+- **Logic vs. mechanical**: Renames, moves, and config edits are mechanical (light). New behavior, conditionals, and state changes are logic (standard+).
+- **API surface and security**: Tasks touching public API contracts, authentication, authorization, or data validation boundaries → heavy.
+
+## Dispatch Mode
+
+The orchestrator assigns a `dispatch` field to each task during decomposition. This tells the execution session whether to use the Task tool or work inline — critical when the plan survives a context clear between planning and execution.
+
+| Dispatch | When | Rationale |
+|----------|------|-----------|
+| **subagent** | 3+ files, distinct operations (implementation + tests), independent work | Fresh context, parallel dispatch, doesn't consume orchestrator window |
+| **inline** | Single-file edits, config changes, tasks where orchestrator needs intermediate results | Keeps results visible for decisions that affect subsequent tasks |
+
+### Relationship to Weight
+
+Dispatch and weight are related but not identical:
+
+- **light** → almost always `inline` (mechanical work, orchestrator can handle directly)
+- **heavy** → almost always `subagent` (complex work benefits from dedicated context)
+- **standard** → either, based on file count and whether intermediate results matter
 
 ## Model Selection (Advisory)
 
@@ -136,6 +175,8 @@ Implementation DONE → Build passes? → Test agent
     - SwiftData @Model annotation
     - @Attribute(.unique) on email
   - Depends: none
+  - Weight: standard
+  - Dispatch: inline
   - Model: sonnet
   - Max turns: 5
 ```
@@ -153,6 +194,8 @@ Why it's good:
   - Files: multiple
   - Criteria: users can log in
   - Depends: none
+  - Weight: light
+  - Dispatch: inline
   - Model: haiku
   - Max turns: 3
 ```

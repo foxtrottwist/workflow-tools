@@ -246,16 +246,72 @@ After all units:
 └── Human Review (final approval)
 ```
 
+## Weight-Based Verification
+
+Check the task's `weight` field before dispatching verification layers. Weight is assigned during decomposition (see development.md).
+
+| Weight | Verification Path |
+|--------|-------------------|
+| **light** | Work pass → programmatic gates → unit complete. Skip confirmation pass and verification agent. |
+| **standard** | Full hierarchy: work pass → programmatic gates → confirmation → post-confirmation gate → verification agent (both stages). |
+| **heavy** | Full hierarchy with 2x max_turns on work pass and verification agent. Same layers as standard, more room to iterate. |
+
+Light tasks are mechanical — file renames, config changes, dependency bumps. The programmatic gates (build, lint, test) catch regressions. Confirmation and verification add cost without catching meaningful issues on mechanical work.
+
+Standard and heavy tasks involve logic changes where agent overconfidence and subtle gaps matter. The full hierarchy earns its keep.
+
 ## When to Skip Layers
 
 | Layer | Skippable? | Rationale |
 |-------|------------|-----------|
 | Programmatic (dev) | No | Fast, objective, no reason to skip |
-| Confirmation (N+1) | No | Core mechanism for catching overconfidence |
-| Verification Stage 1 (Spec) | No | Spec compliance is objective — always check |
-| Verification Stage 2 (Quality) | Rarely | Skip only for trivial tasks |
+| Confirmation (N+1) | Light tasks only | Core mechanism, but mechanical changes don't benefit |
+| Verification Stage 1 (Spec) | Light tasks only | Spec compliance matters less for renames and config |
+| Verification Stage 2 (Quality) | Light tasks only | Skip for mechanical work |
 | Task Review | No | Catches cross-unit issues |
 | Human Review | No | Final authority |
+
+## Recovery Patterns
+
+Every automated recovery path has a retry cap and a human escalation fallback. The orchestrator never loops indefinitely.
+
+### Programmatic Gate Failure
+
+Re-dispatch the work pass with the `gate-result.local.json` contents appended to the original prompt as a `<gate_failure>` block. The subagent receives the original task spec plus the specific build/lint/test failures.
+
+- **Max retries**: 2
+- **Escalation**: If the gate fails after 2 retries, escalate to a human-verify checkpoint with the failure details. Include the `gate-result.local.json` output so the user sees exactly what's breaking.
+
+### Confirmation Pass Disagreement
+
+When the confirmation agent's assessment contradicts the work pass output — it finds gaps and makes changes that alter the work pass result — dispatch a tiebreaker pass.
+
+The tiebreaker agent receives:
+1. The original task spec
+2. The work pass output summary
+3. The confirmation agent's objections or changes
+
+The tiebreaker decides which is correct and either approves or returns the task to the work pass with consolidated feedback.
+
+- **Max tiebreakers**: 1
+- **Escalation**: If unresolved after the tiebreaker, escalate to a human-verify checkpoint with all three perspectives (work pass, confirmation, tiebreaker).
+
+### Verification Agent Rejection
+
+Return the task to the work pass with the verification findings formatted as additional requirements in a `<verification_findings>` block. The work pass agent treats these as mandatory fixes.
+
+After the rework, the task re-enters the verification hierarchy from the programmatic gates step — not from the verification agent. It must pass all layers again.
+
+- **Max rejection cycles**: 1
+- **Escalation**: If the verification agent rejects a second time, escalate to a human-verify checkpoint with the verification findings and the rework attempt.
+
+### Recovery Summary
+
+| Failure Type | Action | Max Retries | Escalation |
+|-------------|--------|-------------|------------|
+| Gate failure | Re-dispatch work pass with `<gate_failure>` block | 2 | human-verify with gate output |
+| Confirmation disagreement | Tiebreaker pass with all context | 1 | human-verify with three perspectives |
+| Verification rejection | Rework with `<verification_findings>` block, re-enter from gates | 1 | human-verify with findings + rework |
 
 ## Gap Severity Guide
 
