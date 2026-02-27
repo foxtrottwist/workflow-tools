@@ -18,7 +18,9 @@ Consult specialist skills for detailed guidance. Read the SKILL.md (and any `ref
 | `axiom-swiftui-26-ref` | iOS 26 new features — Liquid Glass toolbars, WebView, rich text, @Animatable, sliders |
 | `axiom-swift-testing` | Writing unit tests — @Test/@Suite, #expect/#require, parameterized tests, fast test setup |
 | `axiom-accessibility-diag` | VoiceOver issues, Dynamic Type, contrast, touch targets, App Store review prep |
-| `axiom-foundation-models-ref` | Foundation Models — LanguageModelSession, @Generable, @Guide, Tool protocol, streaming |
+| `foundation-models-ref` | Foundation Models — LanguageModelSession, @Generable, @Guide, Tool protocol, streaming |
+| `foundation-models` | Foundation Models discipline — anti-patterns, decision trees, pressure scenarios |
+| `foundation-models-diag` | Foundation Models diagnostics — error triage, Instruments profiling, production crisis |
 | `axiom-swiftdata` | SwiftData — @Model, @Query, @Relationship, CloudKit, migration, performance |
 
 ### Foundation Models References
@@ -31,6 +33,7 @@ When writing or reviewing Foundation Models code, read the applicable references
 | Structured output (`@Generable`) | [references/foundation-models-generable.md](references/foundation-models-generable.md) |
 | Tool definitions | [references/foundation-models-tools.md](references/foundation-models-tools.md) |
 | Performance issues or optimization | [references/foundation-models-performance.md](references/foundation-models-performance.md) |
+| SwiftUI integration patterns | [references/foundation-models-swiftui.md](references/foundation-models-swiftui.md) |
 
 Read multiple references when tasks overlap (e.g., a tool returning `@Generable` types).
 

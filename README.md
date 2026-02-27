@@ -33,7 +33,9 @@ A Claude Code plugin bundling twenty skills and a macOS Shortcuts MCP server for
 | **swiftui-expert-skill** | Building or reviewing SwiftUI views | State management, view composition, performance, Liquid Glass adoption. |
 | **swift-conventions** | Generating or reviewing Swift code | Quick-reference coding standards for Swift 6.2, SwiftUI, SwiftData, Foundation Models. |
 | **axiom-accessibility-diag** | VoiceOver issues, Dynamic Type, color contrast | Accessibility diagnostics with WCAG compliance for iOS/macOS. |
-| **axiom-foundation-models-ref** | On-device AI, @Generable, LanguageModelSession | Complete Foundation Models framework reference (iOS 26+). |
+| **foundation-models-ref** | On-device AI, @Generable, LanguageModelSession | Complete Foundation Models framework reference (iOS 26+). |
+| **foundation-models** | Foundation Models discipline | Anti-patterns, decision trees, and pressure scenarios. |
+| **foundation-models-diag** | Foundation Models diagnostics | Error triage, Instruments profiling, production crisis defense. |
 | **axiom-swift-testing** | Writing unit tests, Swift Testing framework | @Test/@Suite macros, #expect/#require, parameterized tests, fast test setup. |
 | **axiom-swiftdata** | @Model, @Query, ModelContext, CloudKit | SwiftData persistence patterns and iOS 26+ features. |
 | **axiom-swiftui-26-ref** | iOS 26 SwiftUI features | Liquid Glass, @Animatable, WebView, rich text editing, 3D spatial layout. |
@@ -105,7 +107,9 @@ workflow-tools/
 │   ├── swiftui-expert-skill/
 │   ├── swift-conventions/
 │   ├── axiom-accessibility-diag/
-│   ├── axiom-foundation-models-ref/
+│   ├── foundation-models-ref/
+│   ├── foundation-models/
+│   ├── foundation-models-diag/
 │   ├── axiom-swift-testing/
 │   ├── axiom-swiftdata/
 │   ├── axiom-swiftui-26-ref/

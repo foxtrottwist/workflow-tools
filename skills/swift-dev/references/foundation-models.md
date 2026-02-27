@@ -315,6 +315,58 @@ struct AIFeatureView: View {
 - Use Xcode scheme → Run → Options → "Simulated Foundation Models Availability" to test different availability states
 - Use `.greedy` sampling for deterministic, repeatable output
 
+## Xcode Playground Prototyping
+
+Iterate on prompts and @Generable types without rebuilding your app:
+
+```swift
+import FoundationModels
+import Playgrounds
+
+#Playground {
+    let session = LanguageModelSession(instructions: "You are a travel advisor")
+    let response = try await session.respond(to: "Suggest a weekend trip from SF")
+    print(response.content)
+}
+```
+
+Playgrounds in an app project can access your app's @Generable types:
+
+```swift
+#Playground {
+    let session = LanguageModelSession()
+    let itinerary = try await session.respond(
+        to: "Plan a 3-day trip to Tokyo",
+        generating: Itinerary.self  // Defined in your app target
+    ).content
+    print(itinerary.destination)
+}
+```
+
+Use Playgrounds to prototype prompt wording, test @Guide constraints, and verify output quality before integrating into views.
+
+## Prompt Builder with UI Controls
+
+Combine SwiftUI controls with dynamic prompt construction:
+
+```swift
+@State private var duration = 30
+@State private var muscleGroup = "core"
+@State private var kidFriendly = false
+
+var prompt: Prompt {
+    Prompt {
+        "Create a \(duration)-minute workout"
+        "Focus on \(muscleGroup)"
+        if kidFriendly {
+            "Make it suitable for children"
+        }
+    }
+}
+```
+
+Picker and Slider values flow directly into prompt builders. The prompt rebuilds each time state changes — no manual string concatenation needed.
+
 ## Quick Reference
 
 | API | Purpose |

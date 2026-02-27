@@ -225,6 +225,110 @@ let wines = try await session.respond(
 ).content
 ```
 
+## Stateful Tools
+
+Use `class` instead of `struct` when a tool needs to track state across multiple calls in a session:
+
+```swift
+class FindContactTool: Tool {
+    let name = "findContact"
+    let description = "Find a contact, avoiding previously selected ones"
+
+    var pickedContacts = Set<String>()  // Persists across calls
+
+    @Generable
+    struct Arguments {
+        @Guide(description: "Age generation to search")
+        var generation: String
+    }
+
+    func call(arguments: Arguments) async throws -> ToolOutput {
+        let contacts = try await fetchContacts(generation: arguments.generation)
+        let available = contacts.filter { !pickedContacts.contains($0.name) }
+        guard let contact = available.first else {
+            return ToolOutput("No more contacts available for \(arguments.generation)")
+        }
+        pickedContacts.insert(contact.name)
+        return ToolOutput(contact.name)
+    }
+}
+```
+
+Why `class`: Struct tools are copied — mutations in `call()` don't persist to the next invocation. Class instances are passed by reference, so state survives across calls within the same session.
+
+## Tool Transcript Inspection
+
+After a tool-augmented response, the session transcript reveals the full call sequence:
+
+```swift
+for entry in session.transcript {
+    switch entry {
+    case .instruction(let text):
+        print("Instructions: \(text)")
+    case .prompt(let prompt):
+        print("User: \(prompt.segments.first?.description ?? "")")
+    case .toolCall(let call):
+        print("Tool call: \(call.toolName)")
+    case .toolOutput(let output):
+        print("Tool returned: \(output.content)")
+    case .response(let response):
+        print("Model: \(response.segments.first?.description ?? "")")
+    @unknown default:
+        break
+    }
+}
+```
+
+A typical single-tool exchange produces 5-6 entries: instruction → prompt → toolCall → toolOutput → response. Multi-tool exchanges add additional toolCall/toolOutput pairs. Use transcript inspection to debug why a tool wasn't called or why the model's final response doesn't incorporate tool data.
+
+## GeneratedContent Return Type
+
+For structured key-value data from tools, return `GeneratedContent` instead of a plain String:
+
+```swift
+func call(arguments: Arguments) async throws -> ToolOutput {
+    let wines = fetchWines(variety: arguments.variety)
+    return ToolOutput(GeneratedContent(properties: [
+        "count": "\(wines.count)",
+        "inStock": "\(wines.filter { $0.inStock > 0 }.count)",
+        "wineries": wines.map(\.winery).joined(separator: ", ")
+    ]))
+}
+```
+
+Both `String` and `GeneratedContent` work as `ToolOutput`. Use `GeneratedContent` when the model needs to reference specific fields; use `String` for narrative tool output.
+
+## Domain-Constraining Instructions
+
+Limit tool usage to specific topics via session instructions:
+
+```swift
+let session = LanguageModelSession(
+    instructions: InstructionsBuilder {
+        "You are a wine expert"
+        "Only answer questions about wine"
+        "Use the cellarTool for any questions about the user's collection"
+        "Politely decline non-wine topics"
+    },
+    tools: [WineCellarTool(wines: myWines)]
+)
+```
+
+Domain constraints prevent the model from using tools for unrelated queries and keep responses focused on the intended use case.
+
+## Greedy Sampling for Deterministic Tool Calling
+
+Use `.greedy` sampling when you need consistent tool invocation behavior:
+
+```swift
+let response = try await session.respond(
+    to: "Find wines from Napa Valley",
+    options: GenerationOptions(sampling: .greedy)
+)
+```
+
+With default (random) sampling, the model may occasionally skip tool calls or vary argument phrasing. Greedy sampling makes tool calling deterministic for the same input — useful for testing, demos, and workflows requiring predictable behavior.
+
 ## Best Practices
 
 | Aspect | Recommendation |

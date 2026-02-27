@@ -2,13 +2,13 @@
 
 ## Overview
 
-Claude Code plugin packaging nineteen skills, four specialized agents, and a macOS Shortcuts MCP server. This repo is the **canonical source** for all bundled skills and agents — edit them directly here.
+Claude Code plugin packaging twenty-one skills, four specialized agents, and a macOS Shortcuts MCP server. This repo is the **canonical source** for all bundled skills and agents — edit them directly here.
 
 **Productivity skills:** iter, writing, prompt-dev, sharpen, chat-migration, code-audit, azure-devops.
 
 **Development discipline skills:** tdd, systematic-debugging, worktree.
 
-**Swift/iOS skills:** swift-dev (hub with Foundation Models references), swift-concurrency, swiftui-expert-skill, axiom-accessibility-diag, axiom-foundation-models-ref, axiom-swift-testing, axiom-swiftdata, axiom-swiftui-26-ref, axiom-swiftui-debugging. The swift-dev hub skill routes to specialist skills and includes shared lint tooling at `scripts/swift-pattern-lint.sh`. Hookify rules for Swift patterns live in `hookify-rules/`.
+**Swift/iOS skills:** swift-dev (hub with Foundation Models references), swift-concurrency, swiftui-expert-skill, axiom-accessibility-diag, foundation-models-ref, foundation-models, foundation-models-diag, axiom-swift-testing, axiom-swiftdata, axiom-swiftui-26-ref, axiom-swiftui-debugging. The swift-dev hub skill routes to specialist skills and includes shared lint tooling at `scripts/swift-pattern-lint.sh`. Hookify rules for Swift patterns live in `hookify-rules/`.
 
 ## Key Commands
 

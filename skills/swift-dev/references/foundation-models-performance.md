@@ -255,6 +255,45 @@ For SwiftUI views showing AI content:
 2. Yellow flashes show re-rendering areas
 3. Identify unnecessary re-renders during streaming
 
+### Instruments Deep Dive
+
+**Identifying bottlenecks step-by-step:**
+
+1. **First response slow?** Check Asset Loading track. If model load takes 1-2s, add pre-warming:
+   ```swift
+   .task {
+       try? await session.prewarm()
+   }
+   ```
+
+2. **All responses slow?** Check Inference track token counts. High input tokens mean:
+   - Instructions too long → trim to essentials
+   - Schema overhead → use `includeSchemaInPrompt: false` with one-shot examples
+   - Too many tool descriptions → fewer tools or shorter descriptions
+
+3. **Output generation slow?** Check output token count. Reduce by:
+   - Adding output length constraints in instructions
+   - Using `@Guide(.maximumCount())` on arrays
+   - Shorter field names in @Generable types
+
+4. **Compare optimizations:** Profile before and after changes. The token count reduction directly correlates with latency improvement.
+
+### Prompt Prefix Pre-warming
+
+Go beyond basic model loading by pre-processing expected prompt content:
+
+```swift
+// Basic: just load model into memory
+try await session.prewarm()
+
+// Better: pre-process the expected prompt prefix
+try await session.prewarm(promptPrefix: Prompt {
+    "Generate a recipe for"
+})
+```
+
+The prompt prefix version pre-computes tokens for the expected prompt start, making the first response even faster. Use when you know the prompt pattern in advance (e.g., a view that always generates recipes, a screen that always summarizes text).
+
 ## Performance Checklist
 
 1. **Pre-warm** on view appear or user navigation

@@ -1,11 +1,6 @@
 ---
-name: axiom-foundation-models-ref
+name: foundation-models-ref
 description: Reference — Complete Foundation Models framework guide covering LanguageModelSession, @Generable, @Guide, Tool protocol, streaming, dynamic schemas, built-in use cases, and all WWDC 2025 code examples
-license: MIT
-compatibility: iOS 26+, macOS 26+, iPadOS 26+, axiom-visionOS 26+
-metadata:
-  version: "1.0.0"
-  last-updated: "2025-12-03"
 ---
 
 # Foundation Models Framework — Complete API Reference
@@ -31,8 +26,8 @@ Use this reference when:
 - Debugging implementation issues
 
 **Related Skills**:
-- `axiom-foundation-models` — Discipline skill with anti-patterns, pressure scenarios, decision trees
-- `axiom-foundation-models-diag` — Diagnostic skill for troubleshooting issues
+- `foundation-models` — Discipline skill with anti-patterns, pressure scenarios, decision trees
+- `foundation-models-diag` — Diagnostic skill for troubleshooting issues
 
 ---
 
@@ -343,6 +338,38 @@ struct Itinerary {
 
 #### From WWDC 286:11:00
 
+### One-Shot Prompting with @Generable
+
+Define a gold-standard example as a static property on your @Generable type, then include it in the prompt to teach the model tone, style, and format — not just structure.
+
+```swift
+// Define a gold-standard example as a static property
+extension Itinerary {
+    static let exampleTripToJapan = Itinerary(
+        destination: "Tokyo, Japan",
+        days: 5,
+        activities: ["Visit Senso-ji Temple", "Explore Akihabara", "Day trip to Mt. Fuji"],
+        budget: 3000
+    )
+}
+
+// Use one-shot example in prompt
+let prompt = Prompt {
+    "Generate a travel itinerary for \(userDestination)"
+    "Here is an example of the quality and format expected:"
+    Itinerary.exampleTripToJapan
+}
+
+// When example demonstrates structure, skip schema insertion
+let response = try await session.respond(
+    to: prompt,
+    generating: Itinerary.self,
+    options: GenerationOptions(includeSchemaInPrompt: false)
+)
+```
+
+One-shot teaches tone and style, not just structure. Using `includeSchemaInPrompt: false` saves tokens when the example already demonstrates the format. The constrained decoding still enforces structural correctness regardless of this setting.
+
 ---
 
 ## Streaming
@@ -383,7 +410,7 @@ struct Itinerary {
 }
 
 let stream = session.streamResponse(
-    to: "Craft a 3-day itinerary to Mt. Fuji.",
+    to: "Plan a 3-day itinerary to Mt. Fuji.",
     generating: Itinerary.self
 )
 
@@ -395,6 +422,31 @@ for try await partial in stream {
 #### From WWDC 286:9:40
 
 **Return Type**: `AsyncSequence<Itinerary.PartiallyGenerated>`
+
+### Safe Unwrapping of PartiallyGenerated Properties
+
+Since all properties on `PartiallyGenerated` are optional, use `if let` to safely access them during streaming. Properties arrive in declaration order — earlier properties resolve before later ones.
+
+```swift
+@State private var partial: Itinerary.PartiallyGenerated?
+
+// During streaming
+for try await snapshot in stream {
+    withAnimation {
+        partial = snapshot
+    }
+}
+
+// In view - safe unwrapping
+if let name = partial?.name {
+    Text(name).font(.title)
+}
+if let days = partial?.days {
+    ForEach(days, id: \.self) { day in
+        DayView(day: day)
+    }
+}
+```
 
 ### SwiftUI Integration
 
@@ -459,12 +511,12 @@ if let name = itinerary?.name {
 
 **2. View identity for arrays**:
 ```swift
-// ✅ GOOD - Stable identity
+// GOOD - Stable identity
 ForEach(days, id: \.id) { day in
     DayView(day: day)
 }
 
-// ❌ BAD - Identity changes
+// BAD - Identity changes
 ForEach(days.indices, id: \.self) { index in
     DayView(day: days[index])
 }
@@ -472,7 +524,7 @@ ForEach(days.indices, id: \.self) { index in
 
 **3. Property order optimization**:
 ```swift
-// ✅ GOOD - Title first for streaming
+// GOOD - Title first for streaming
 @Generable
 struct Article {
     var title: String      // Shows immediately
@@ -569,9 +621,40 @@ print(response.content)
 
 **From WWDC 301**: "Model autonomously decides when and how often to call tools. Can call multiple tools per request, even in parallel."
 
+### Tool Transcript Inspection
+
+After a tool-augmented response, the session transcript contains entries for the full exchange. A single tool-calling interaction typically produces 6 entries:
+
+1. `.instruction` — session instructions
+2. `.prompt` — user's prompt
+3. `.toolCall` — model's tool invocation with arguments
+4. `.toolOutput` — tool's returned data
+5. `.toolCall` (optional) — additional tool calls if needed
+6. `.response` — model's final text response incorporating tool data
+
+```swift
+// Inspect transcript after tool-augmented response
+for entry in session.transcript {
+    switch entry {
+    case .instruction(let text):
+        print("Instructions: \(text)")
+    case .prompt(let prompt):
+        print("Prompt: \(prompt.segments.first?.description ?? "")")
+    case .toolCall(let call):
+        print("Tool call: \(call.toolName)(\(call.arguments))")
+    case .toolOutput(let output):
+        print("Tool output: \(output.content)")
+    case .response(let response):
+        print("Response: \(response.segments.first?.description ?? "")")
+    @unknown default:
+        break
+    }
+}
+```
+
 ### Stateful Tools
 
-Use `class` instead of `struct` to maintain state across tool calls. The tool instance persists for the session lifetime, enabling patterns like tracking previously returned results:
+Use `class` (not `struct`) when a tool needs to track state across multiple calls. With a `struct`, each tool call operates on a copy — state mutations are lost between calls. The tool instance persists for the session lifetime, so a `class` accumulates state across the full conversation.
 
 ```swift
 class FindContactTool: Tool {
@@ -871,7 +954,7 @@ struct TruncationSummarizer: TextSummarizer { /* Simple truncation */ }
 Nested `@Generable` types must each independently conform to `@Generable`:
 
 ```swift
-// ✅ Both types marked @Generable
+// Both types marked @Generable
 @Generable struct Itinerary {
     var days: [DayPlan]
 }
@@ -880,7 +963,7 @@ Nested `@Generable` types must each independently conform to `@Generable`:
     var activities: [String]
 }
 
-// ❌ Will fail — nested type not @Generable
+// Will fail — nested type not @Generable
 @Generable struct Itinerary {
     var days: [DayPlan]  // DayPlan must also be @Generable
 }
@@ -943,16 +1026,21 @@ guard supportedLanguages.contains(Locale.current.language) else {
 
 ## Performance & Profiling
 
-### Foundation Models Instrument
+### Instruments for Foundation Models
 
-**Access**: Instruments app → Foundation Models template
+Profile Foundation Models sessions with the dedicated Instruments template.
 
-**Metrics**:
-- Initial model load time
-- Token counts (input/output)
-- Generation time per request
-- Latency breakdown
-- Optimization opportunities
+**Access**: Product -> Profile (Cmd+I) -> choose blank template -> add "Foundation Models" instrument.
+
+**Three key tracks**:
+
+1. **Asset Loading track** — Shows model load time. This is the latency you target with pre-warming. If you see a long bar here before inference starts, create the session earlier in your app lifecycle.
+
+2. **Inference track** — Token counts (input and output) and generation duration. High input token counts point to optimization opportunities: shorter property names, `includeSchemaInPrompt: false`, or trimmed instructions.
+
+3. **Response timeline** — First-token latency and total generation time. Compare before/after optimizations to quantify improvements.
+
+**Workflow**: Run a profiling session, trigger a generation, then examine the three tracks. Look for large asset-loading gaps (fix with pre-warming), high input token counts (fix with schema/instruction trimming), and long first-token latency (fix with property order optimization for perceived speed).
 
 **From WWDC 286**: "New Instruments profiling template lets you observe areas of optimization and quantify improvements."
 
@@ -1027,7 +1115,7 @@ Declare important properties first in `@Generable` structs. With streaming, perc
 
 ### Overview
 
-Xcode Playgrounds enable rapid iteration on prompts without rebuilding entire app.
+Xcode Playgrounds enable rapid iteration on prompts without rebuilding your entire app.
 
 ### Basic Usage
 
@@ -1045,18 +1133,63 @@ import Playgrounds
 
 #### From WWDC 286:2:28
 
-Playgrounds can also access types defined in your app (like @Generable structs).
+### Playground Workflow for Rapid Prototyping
+
+Create a Playground inside an existing app project to iterate on prompts and test @Generable types without a full rebuild cycle.
+
+**Setup**: File -> New -> Playground in your Xcode project. Import `Playgrounds` for the `#Playground` macro and `FoundationModels` for the session API.
+
+```swift
+import FoundationModels
+import Playgrounds
+
+#Playground {
+    // Access @Generable types defined in your app target
+    let session = LanguageModelSession(instructions: "Plan travel itineraries.")
+    let response = try await session.respond(
+        to: "Plan a weekend in Portland",
+        generating: Itinerary.self  // Your app's @Generable type
+    )
+    print(response.content)
+}
+```
+
+**Key advantages**:
+- App-defined `@Generable` types are accessible from the Playground — no need to duplicate type definitions
+- Prompt changes execute immediately without rebuilding the full app
+- Test different instructions, temperature settings, and generation options interactively
+- Validate @Guide constraints and property ordering before integrating into views
+
+---
+
+## Common Pitfalls
+
+### Not Checking Availability
+
+Always check `SystemLanguageModel.default.availability` before showing generative UI. Three unavailable states exist: `.deviceNotEligible`, `.appleIntelligenceNotEnabled`, `.modelNotReady`. Check on `scenePhase` activation to catch state changes.
+
+### Prompt Injection via User Input in Instructions
+
+NEVER interpolate untrusted user input into instructions. Instructions define the model's trusted behavior — user content goes in prompts only. The model is trained to prioritize instructions over prompts as a security boundary.
+
+### Context Bloat from Full Transcript
+
+Don't carry the entire transcript to a new session when handling `exceededContextWindowSize`. Keep only instructions + last exchange, or summarize. Full transcript copy just re-triggers the same error.
+
+### Over-Complex Instructions When @Generable Encodes Structure
+
+If your @Generable type already defines the output structure with @Guide descriptions, don't duplicate that structure in verbose instructions. The constrained decoding handles structure — use instructions for tone, style, and behavioral constraints only.
 
 ---
 
 ## API Quick Reference
 
-- **`LanguageModelSession`** — Main interface: `respond(to:)` → `Response<String>`, `respond(to:generating:)` → `Response<T>`, `streamResponse(to:generating:)` → `AsyncSequence<T.PartiallyGenerated>`. Properties: `transcript`, `isResponding`.
+- **`LanguageModelSession`** — Main interface: `respond(to:)` -> `Response<String>`, `respond(to:generating:)` -> `Response<T>`, `streamResponse(to:generating:)` -> `AsyncSequence<T.PartiallyGenerated>`. Properties: `transcript`, `isResponding`.
 - **`SystemLanguageModel`** — `default.availability` (`.available`/`.unavailable(reason)`), `default.supportedLanguages`, `init(useCase:)`
 - **`GenerationOptions`** — `sampling` (`.greedy`/`.random`), `temperature`, `includeSchemaInPrompt`
 - **`@Generable`** — Macro enabling structured output with constrained decoding
 - **`@Guide`** — Property constraints: `description:`, `.range()`, `.count()`, `.maximumCount()`, `Regex`
-- **`Tool` protocol** — `name`, `description`, `Arguments: Generable`, `call(arguments:) → ToolOutput`
+- **`Tool` protocol** — `name`, `description`, `Arguments: Generable`, `call(arguments:) -> ToolOutput`
 - **`DynamicGenerationSchema`** — Runtime schema definition with `GeneratedContent` output
 - **`GenerationError`** — `.exceededContextWindowSize`, `.guardrailViolation`, `.unsupportedLanguageOrLocale`
 
@@ -1071,7 +1204,7 @@ Playgrounds can also access types defined in your app (like @Generable structs).
 
 ### From Manual JSON Parsing
 
-Use `@Generable` with `respond(to:generating:)` instead of prompting for JSON and parsing manually. See `axiom-foundation-models` Scenario 2 for the complete migration pattern.
+Use `@Generable` with `respond(to:generating:)` instead of prompting for JSON and parsing manually. See `foundation-models` Scenario 2 for the complete migration pattern.
 
 ---
 
@@ -1079,11 +1212,8 @@ Use `@Generable` with `respond(to:generating:)` instead of prompting for JSON an
 
 **WWDC**: 286, 259, 301
 
-**Skills**: axiom-foundation-models, axiom-foundation-models-diag
+**Skills**: foundation-models, foundation-models-diag
 
 ---
 
-**Last Updated**: 2025-12-03
-**Version**: 1.0.0
-**Skill Type**: Reference
-**Content**: All WWDC 2025 code examples included
+**Last Updated**: 2026-02-27

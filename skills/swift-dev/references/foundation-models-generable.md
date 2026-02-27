@@ -212,6 +212,97 @@ let response = try await session.respond(
 - Can significantly improve quality and consistency
 - Allows disabling schema to save tokens
 
+## One-Shot Example Pattern
+
+Provide a gold-standard example to teach the model tone and quality, not just structure:
+
+```swift
+extension Itinerary {
+    static let exampleTripToJapan = Itinerary(
+        destination: "Tokyo, Japan",
+        days: 5,
+        activities: ["Visit Senso-ji Temple", "Explore Akihabara", "Day trip to Mt. Fuji"],
+        budget: 3000
+    )
+}
+
+let prompt = Prompt {
+    "Generate a travel itinerary for \(userDestination)"
+    "Here is an example of the expected quality and format:"
+    Itinerary.exampleTripToJapan
+}
+
+// Example demonstrates structure, so skip schema insertion
+let response = try await session.respond(
+    to: prompt,
+    generating: Itinerary.self,
+    options: GenerationOptions(includeSchemaInPrompt: false)
+)
+```
+
+**When to use `includeSchemaInPrompt: false`:**
+- Example fully demonstrates the output structure
+- Same @Generable type used in prior turns (schema already in transcript)
+- Token budget is tight and you need to save input tokens
+
+**When to keep schema in prompt (default):**
+- No example provided
+- First generation of this type in a new session
+- Complex nested types where example alone may not convey all constraints
+
+## Enum Constrained Choices
+
+Use `@Guide(.anyOf())` with dynamic data to constrain string values. For compile-time known sets, prefer @Generable enums:
+
+```swift
+// Compile-time: Use @Generable enum
+@Generable
+enum WineType: String {
+    case red, white, rosé, sparkling
+}
+
+// Runtime: Use @Guide(.anyOf()) with model data
+struct WineRecommendation {
+    @Guide(.anyOf(["Cabernet Sauvignon", "Pinot Noir", "Chardonnay"]))
+    var variety: String
+}
+```
+
+@Generable enums with String raw values use constrained decoding — the model can only generate valid cases. `.anyOf()` provides the same constraint for runtime-determined values.
+
+## String → Structured Migration
+
+Migrate from plain text to structured output when you need to use the data programmatically:
+
+```swift
+// Before: Plain text — hard to use in UI
+let text = try await session.respond(to: "Describe a recipe").content
+// "Pasta Carbonara takes 20 minutes..."
+
+// After: Structured — direct UI binding
+@Generable
+struct Recipe {
+    var name: String
+    @Guide(.range(5...120))
+    var cookingTime: Int
+    var ingredients: [String]
+    var instructions: String
+}
+
+let recipe = try await session.respond(
+    to: "Describe a recipe",
+    generating: Recipe.self
+).content
+// recipe.name, recipe.cookingTime, recipe.ingredients — all typed
+```
+
+Migration steps:
+1. Identify what data you extract from the text response
+2. Create @Generable struct with those fields
+3. Add @Guide constraints for ranges, counts, descriptions
+4. Switch from `respond(to:)` to `respond(to:generating:)`
+5. Remove any manual parsing code
+
 ## Dynamic Schemas
 
 For runtime-defined structures (e.g., user-created forms):
