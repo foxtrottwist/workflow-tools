@@ -1,104 +1,31 @@
 # Output Formats
 
-Templates for the three delivery modes. Select based on user preference at the DELIVER phase.
+Section requirements for the two spec formats and the handoff. Compose the document structure yourself — these are completeness checks, not fill-in-the-blank scaffolding.
 
 ## Statement of Intent
 
-Dense, actionable summary. Use when the output feeds directly into a prompt or skill invocation.
+Dense, single-page summary. Default for most inputs.
 
-```markdown
-## Intent
+**Required sections:** Intent (1-2 sentences: what and why), Scope (primary deliverable, secondary concerns if any, explicit exclusions if identified), Key Concerns (ranked, each with brief rationale), Success Criteria (measurable or observable outcomes).
 
-{1-2 sentence core objective — what and why}
+**Optional section:** Constraints (technical, timeline, quality boundaries) — omit if none were identified during clarification.
 
-## Scope
-
-- **Primary:** {main deliverable or outcome}
-- **Secondary:** {supporting concerns, if any}
-- **Out of scope:** {explicit exclusions, if identified}
-
-## Key Concerns
-
-1. {Concern with brief rationale}
-2. {Concern with brief rationale}
-3. {Concern with brief rationale}
-
-## Constraints
-
-{Technical, timeline, quality, or other boundaries — omit section if none}
-
-## Success Criteria
-
-- {Measurable or observable outcome}
-- {Measurable or observable outcome}
-```
+Every sentence carries information. If a section would be empty or speculative, cut it.
 
 ## Lightweight Spec
 
-Extended format for complex or multi-phase work. Use when the output will be saved to disk for future reference or handed to iter/plan mode.
+Extended format for complex or multi-phase work.
 
-```markdown
-# {Project/Task Title}
+**Required sections:** Problem Statement (what problem exists, why it matters — 2-3 sentences), Proposed Approach (high-level strategy), Requirements (MoSCoW: must-have, should-have, won't-include), Key Concerns (tabular: concern, impact level, notes), Success Criteria (checkboxes, measurable).
 
-## Problem Statement
+**Optional sections:** Constraints (each with rationale), Open Questions (unresolved items from clarification — only include if genuinely unresolved, not as a hedge).
 
-{What problem exists and why it matters — 2-3 sentences}
+The spec must be self-contained. A reader with no context from this conversation should understand the full picture.
 
-## Proposed Approach
+## Handoff
 
-{High-level strategy — what will be built/done and how}
+After saving the spec to disk, present the file path and the suggested next step. Adapt the suggested skill to the spec's domain: `/iter` for implementation or research, `/prompt-dev` for prompt templates, `/write` for written content. The handoff should name the specific file path and the specific skill invocation.
 
-## Requirements
+In Claude Code with plan mode, the handoff instructions go in the `## Post-Approval` section of the plan file (see step 6 in SKILL.md). After context clear, this section tells Claude what to do.
 
-### Must Have
-- {Requirement}
-
-### Should Have
-- {Requirement}
-
-### Won't Include
-- {Explicit exclusion}
-
-## Key Concerns
-
-| # | Concern | Impact | Notes |
-|---|---------|--------|-------|
-| 1 | {Concern} | {high/medium/low} | {Context} |
-
-## Constraints
-
-- {Constraint with rationale}
-
-## Success Criteria
-
-- [ ] {Measurable outcome}
-- [ ] {Measurable outcome}
-
-## Open Questions
-
-- {Unresolved item, if any}
-```
-
-## Workflow Invocation
-
-Format for handing off to a specific skill. Match the target skill's expected input patterns.
-
-### iter handoff
-```
-/iter {refined statement of intent — 1-2 sentences covering what to build/research and the key constraints}
-```
-
-### writing handoff
-```
-/writing {content type}: {purpose and audience} — {key points to cover}
-```
-
-### prompt-dev handoff
-```
-/prompt-dev {what the prompt should do} — {target audience/use case, constraints, success criteria}
-```
-
-### General prompt
-```
-{Refined request — clear objective, key constraints, expected output format}
-```
+Without plan mode, present the handoff directly after saving the file.

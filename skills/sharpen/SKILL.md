@@ -5,21 +5,30 @@ description: Refine raw, unstructured thoughts into focused statements of intent
 
 # Sharpen
 
-Refine unstructured thinking into focused intent through conversational questioning. Produces output ready for direct use, workflow invocation, or disk for later.
+Refine unstructured thinking into focused intent. This session's only job is to produce a clear statement of intent, save it to disk, and end. The spec on disk is the handoff artifact for the next session.
 
 ## Workflow
 
 ```
-INTAKE  →  ANALYZE  →  CLARIFY  →  SYNTHESIZE  →  REVIEW  →  DELIVER
+PLAN MODE  →  INTAKE  →  ANALYZE  →  CLARIFY  →  SYNTHESIZE  →  APPROVE  →  DELIVER
+(if avail.)   (accept)   (silent)    (ask)       (draft)        (gate)      (save + handoff)
 ```
 
-## 1. Intake
+## 1. Enter Plan Mode
+
+If plan mode is available (Claude Code, Cowork), enter it immediately. Plan mode prevents premature execution — this session is for thinking, not building.
+
+**Claude Code specifics:** After plan approval, Claude Code defaults to clearing context and executing. The plan file survives this clear. To make the handoff work, the plan must include a `## Post-Approval` section at the end with the save path and iter invocation — this is what Claude reads after the context clear to know its only remaining job is to save the file and present the handoff.
+
+If plan mode is not available (chat, API), proceed directly to Intake. The AskUserQuestion approval in step 6 serves the same gating role. The session still ends after delivery.
+
+## 2. Intake
 
 Accept raw input without judgment. The user's initial dump may be rambling, contradictory, or incomplete — that's the point. Acknowledge receipt and signal that refinement is starting.
 
 Do not ask questions yet. First, analyze.
 
-## 2. Analyze
+## 3. Analyze
 
 Silently extract from the raw input:
 
@@ -32,7 +41,7 @@ Silently extract from the raw input:
 
 This analysis drives the questions in the next phase. Do not present the analysis to the user — it informs question selection.
 
-## 3. Clarify
+## 4. Clarify
 
 Use **AskUserQuestion** to run 2-3 targeted rounds. Each round should build on previous answers. Questions should feel like a conversation, not a form.
 
@@ -95,22 +104,35 @@ Not every input needs all three rounds. Match question depth to input complexity
 - **Moderate input** (clear intent, multiple concerns): 2 rounds — confirm + prioritize, then fill gaps
 - **Complex input** (unclear intent, contradictions, many threads): 3 rounds — confirm, gap-fill, resolve tensions
 
-## 4. Synthesize
+## 5. Synthesize
 
 Draft the refined output. Apply these principles:
 
 - **Dense over verbose** — Every sentence should carry information. Cut filler.
 - **Specific over abstract** — Name the things. "Refactor the auth middleware" beats "improve the authentication system."
-- **Structured over flat** — Use the templates in [references/output-formats.md](references/output-formats.md) as starting points.
+- **Structured over flat** — Use the section requirements in [references/output-formats.md](references/output-formats.md) to ensure completeness.
 - **Preserve the user's priorities** — The ordering from clarification should be reflected in the output. Primary concerns first.
 
 Select the output format based on complexity:
 - **Statement of intent** — Default for most inputs. Dense, single-page.
 - **Lightweight spec** — For complex, multi-phase work or when the user wants to save for later.
 
-## 5. Review
+## 6. Approve
 
-Present the synthesized output and ask for approval using **AskUserQuestion**:
+Present the synthesized spec for approval. This is the gate between thinking and delivery.
+
+**In plan mode (Claude Code):** Write the spec to the plan file with a `## Post-Approval` section appended:
+
+```
+## Post-Approval
+
+Save the spec above (everything before this section) to `.workflow.local/sharpen/{slug}.md`.
+Then present the handoff: suggest clearing context and invoking `/iter` with the spec file path.
+```
+
+Then use ExitPlanMode. After the user approves (default: clear context + auto-accept), Claude reads the plan file, sees the Post-Approval section, and executes the save + handoff. The Post-Approval section is excluded from the saved spec file.
+
+**Without plan mode (chat, Cowork, API):** Use AskUserQuestion:
 
 ```yaml
 question: "How does this look?"
@@ -125,41 +147,32 @@ options:
     description: "The framing is off — loop back through clarification"
 ```
 
-**If "Needs editing":** Apply the user's specific changes, re-present. No need to re-run full clarification.
+**If revision requested:** Apply changes, re-present. A failed synthesis is still useful — it shows what the user *doesn't* want.
 
-**If "Something's missing":** Ask what's missing, integrate it, re-present.
+**If "Start over":** Return to Clarify (step 4) with new context from this attempt.
 
-**If "Start over":** Return to Clarify (step 3) with the new context from this attempt. The failed synthesis is still useful — it shows what the user *doesn't* want.
+## 7. Deliver
 
-## 6. Deliver
+After plan approval, Write tools are available. Always save to disk — the file is the handoff artifact.
 
-After approval, ask for output mode:
+1. **Save** the approved spec to `.workflow.local/sharpen/{slug}.md`. Descriptive slug from the intent (e.g., `auth-refactor-spec.md`, `api-research-brief.md`).
+2. **Present the handoff.** Show the file path and the suggested next step. See [references/output-formats.md](references/output-formats.md) for the handoff format.
 
-```yaml
-question: "How should I deliver this?"
-options:
-  - label: "Show inline"
-    description: "Display as copyable text right here"
-  - label: "Invoke a workflow"
-    description: "Hand off to iter, writing, prompt-dev, or another skill"
-  - label: "Save to disk"
-    description: "Write to .workflow.local/sharpen/ for future use"
-  - label: "Show inline + save"
-    description: "Display now and also write to disk"
+The session's job is done. The spec on disk crosses the context boundary — the next session reads it cold.
+
+### Handoff Chain
+
+This skill is the first stage of a three-phase pipeline:
+
+```
+SHARPEN (this session)     →  ITER plan (next session)      →  ITER execute (next session)
+Clarify intent → spec file    Read spec → decompose → plan    Read plan → dispatch → verify
 ```
 
-**Show inline:** Present the final output in a clean, copyable format.
-
-**Invoke a workflow:** Suggest the best-fit skill based on the refined intent. Present the suggested invocation for approval before triggering.
-
-**Save to disk:** Write to `.workflow.local/sharpen/{slug}.md`. Use a descriptive slug derived from the intent (e.g., `auth-refactor-spec.md`, `api-research-brief.md`).
-
-**Show inline + save:** Both — display first, then write to disk.
-
-See [references/output-formats.md](references/output-formats.md) for delivery templates.
+Each phase gets full context budget for its specific job. The file on disk is the only thing that crosses each boundary.
 
 ## References
 
 | File | When to Read |
 |------|-------------|
-| [output-formats.md](references/output-formats.md) | During Synthesize and Deliver — templates for statements of intent, specs, and workflow invocations |
+| [output-formats.md](references/output-formats.md) | During Synthesize and Deliver — spec formats and handoff template |
