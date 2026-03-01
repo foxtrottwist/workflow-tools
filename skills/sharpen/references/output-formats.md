@@ -26,6 +26,4 @@ The spec must be self-contained. A reader with no context from this conversation
 
 After saving the spec to disk, present the file path and the suggested next step. Adapt the suggested skill to the spec's domain: `/iter` for implementation or research, `/prompt-dev` for prompt templates, `/write` for written content. The handoff should name the specific file path and the specific skill invocation.
 
-In Claude Code with plan mode, the handoff instructions go in the `## Post-Approval` section of the plan file (see step 6 in SKILL.md). After context clear, this section tells Claude what to do.
-
-Without plan mode, present the handoff directly after saving the file.
+Present the handoff directly after saving the file.

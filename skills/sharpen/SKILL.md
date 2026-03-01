@@ -10,25 +10,17 @@ Refine unstructured thinking into focused intent. This session's only job is to 
 ## Workflow
 
 ```
-PLAN MODE  →  INTAKE  →  ANALYZE  →  CLARIFY  →  SYNTHESIZE  →  APPROVE  →  DELIVER
-(if avail.)   (accept)   (silent)    (ask)       (draft)        (gate)      (save + handoff)
+INTAKE  →  ANALYZE  →  CLARIFY  →  SYNTHESIZE  →  APPROVE  →  DELIVER
+(accept)   (silent)    (ask)       (draft)        (gate)      (save + handoff)
 ```
 
-## 1. Enter Plan Mode
-
-If plan mode is available (Claude Code, Cowork), enter it immediately. Plan mode prevents premature execution — this session is for thinking, not building.
-
-**Claude Code specifics:** After plan approval, Claude Code defaults to clearing context and executing. The plan file survives this clear. To make the handoff work, the plan must include a `## Post-Approval` section at the end with the save path and iter invocation — this is what Claude reads after the context clear to know its only remaining job is to save the file and present the handoff.
-
-If plan mode is not available (chat, API), proceed directly to Intake. The AskUserQuestion approval in step 6 serves the same gating role. The session still ends after delivery.
-
-## 2. Intake
+## 1. Intake
 
 Accept raw input without judgment. The user's initial dump may be rambling, contradictory, or incomplete — that's the point. Acknowledge receipt and signal that refinement is starting.
 
 Do not ask questions yet. First, analyze.
 
-## 3. Analyze
+## 2. Analyze
 
 Silently extract from the raw input:
 
@@ -41,7 +33,7 @@ Silently extract from the raw input:
 
 This analysis drives the questions in the next phase. Do not present the analysis to the user — it informs question selection.
 
-## 4. Clarify
+## 3. Clarify
 
 Use **AskUserQuestion** to run 2-3 targeted rounds. Each round should build on previous answers. Questions should feel like a conversation, not a form.
 
@@ -104,7 +96,7 @@ Not every input needs all three rounds. Match question depth to input complexity
 - **Moderate input** (clear intent, multiple concerns): 2 rounds — confirm + prioritize, then fill gaps
 - **Complex input** (unclear intent, contradictions, many threads): 3 rounds — confirm, gap-fill, resolve tensions
 
-## 5. Synthesize
+## 4. Synthesize
 
 Draft the refined output. Apply these principles:
 
@@ -117,22 +109,11 @@ Select the output format based on complexity:
 - **Statement of intent** — Default for most inputs. Dense, single-page.
 - **Lightweight spec** — For complex, multi-phase work or when the user wants to save for later.
 
-## 6. Approve
+## 5. Approve
 
 Present the synthesized spec for approval. This is the gate between thinking and delivery.
 
-**In plan mode (Claude Code):** Write the spec to the plan file with a `## Post-Approval` section appended:
-
-```
-## Post-Approval
-
-Save the spec above (everything before this section) to `.workflow.local/sharpen/{slug}.md`.
-Then present the handoff: suggest clearing context and invoking `/iter` with the spec file path.
-```
-
-Then use ExitPlanMode. After the user approves (default: clear context + auto-accept), Claude reads the plan file, sees the Post-Approval section, and executes the save + handoff. The Post-Approval section is excluded from the saved spec file.
-
-**Without plan mode (chat, Cowork, API):** Use AskUserQuestion:
+Use AskUserQuestion:
 
 ```yaml
 question: "How does this look?"
@@ -149,11 +130,11 @@ options:
 
 **If revision requested:** Apply changes, re-present. A failed synthesis is still useful — it shows what the user *doesn't* want.
 
-**If "Start over":** Return to Clarify (step 4) with new context from this attempt.
+**If "Start over":** Return to Clarify (step 3) with new context from this attempt.
 
-## 7. Deliver
+## 6. Deliver
 
-After plan approval, Write tools are available. Always save to disk — the file is the handoff artifact.
+After approval, save to disk — the file is the handoff artifact.
 
 1. **Save** the approved spec to `.workflow.local/sharpen/{slug}.md`. Descriptive slug from the intent (e.g., `auth-refactor-spec.md`, `api-research-brief.md`).
 2. **Present the handoff.** Show the file path and the suggested next step. See [references/output-formats.md](references/output-formats.md) for the handoff format.
