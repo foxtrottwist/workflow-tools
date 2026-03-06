@@ -64,11 +64,11 @@ else
 fi
 
 # Hooks
-if [ ! -f "$SCRIPT_DIR/hooks.json" ]; then
-  echo "  FAIL: hooks.json missing"
+if [ ! -f "$SCRIPT_DIR/hooks/hooks.json" ]; then
+  echo "  FAIL: hooks/hooks.json missing"
   errors=$((errors + 1))
 else
-  echo "  OK: hooks.json"
+  echo "  OK: hooks/hooks.json"
 fi
 
 HOOK_SCRIPTS=(swift-patterns.sh swift-skill-nudge.sh verification-nudge.sh claude-md-bloat-guard.sh)

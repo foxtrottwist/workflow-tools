@@ -67,7 +67,7 @@ Agents live at `agents/<name>.md` at plugin root. They use YAML frontmatter for 
 
 ## Hooks
 
-Plugin ships `hooks.json` at plugin root with hooks that pair with bundled skills:
+Plugin ships `hooks/hooks.json` with hooks that pair with bundled skills:
 
 | Hook | Event | Pairs With |
 |------|-------|------------|

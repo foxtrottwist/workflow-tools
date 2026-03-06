@@ -50,8 +50,11 @@ if [[ ${#VIOLATIONS[@]} -gt 0 ]]; then
   COMBINED=$(echo "$COMBINED" | sed 's/"/\\"/g' | tr '\n' ' ')
   cat <<EOF
 {
-  "decision": "block",
-  "reason": "$COMBINED"
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "deny",
+    "permissionDecisionReason": "$COMBINED"
+  }
 }
 EOF
 fi

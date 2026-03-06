@@ -19,7 +19,7 @@ SWIFT_CHANGES=$(git status --porcelain | grep '\.swift$' | wc -l | tr -d ' ')
 
 cat <<EOF
 {
-  "continue": false,
-  "stopReason": "Swift files were modified ($SWIFT_CHANGES file(s)). Before stopping: confirm build passes and tests were run. If verification is already complete or not applicable, state why and proceed."
+  "decision": "block",
+  "reason": "Swift files were modified ($SWIFT_CHANGES file(s)). Before stopping: confirm build passes and tests were run. If verification is already complete or not applicable, state why and proceed."
 }
 EOF
