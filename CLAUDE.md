@@ -8,7 +8,7 @@ Claude Code plugin packaging twenty-one skills, four specialized agents, and a m
 
 **Development discipline skills:** tdd, systematic-debugging, worktree.
 
-**Swift/iOS skills:** swift-dev (hub with Foundation Models references), swift-concurrency, swiftui-expert-skill, axiom-accessibility-diag, foundation-models-ref, foundation-models, foundation-models-diag, axiom-swift-testing, axiom-swiftdata, axiom-swiftui-26-ref, axiom-swiftui-debugging. The swift-dev hub skill routes to specialist skills and includes shared lint tooling at `scripts/swift-pattern-lint.sh`. Hookify rules for Swift patterns live in `hookify-rules/`.
+**Swift/iOS skills:** swift-dev (hub with Foundation Models references), swift-concurrency, swiftui-expert-skill, axiom-accessibility-diag, foundation-models-ref, foundation-models, foundation-models-diag, axiom-swift-testing, axiom-swiftdata, axiom-swiftui-26-ref, axiom-swiftui-debugging. The swift-dev hub skill routes to specialist skills and includes shared lint tooling at `scripts/swift-pattern-lint.sh`.
 
 ## Key Commands
 
@@ -64,6 +64,19 @@ Agents live at `agents/<name>.md` at plugin root. They use YAML frontmatter for 
 3. Bump version in both `plugin.json` and `marketplace.json`
 4. Update skill count and description in `marketplace.json`
 5. Run `bash build.sh` to validate
+
+## Hooks
+
+Plugin ships `hooks.json` at plugin root with hooks that pair with bundled skills:
+
+| Hook | Event | Pairs With |
+|------|-------|------------|
+| `hooks/swift-patterns.sh` | PreToolUse (Edit\|Write) | swift-dev ecosystem — blocks deprecated Swift patterns |
+| `hooks/swift-skill-nudge.sh` | UserPromptSubmit | swift-dev routing — nudges skill usage for Swift prompts |
+| `hooks/verification-nudge.sh` | Stop | TDD, iter — prompts build/test verification before stopping |
+| `hooks/claude-md-bloat-guard.sh` | PreToolUse (Edit\|Write) | Optimization principles — warns on CLAUDE.md bloat |
+
+All plugin hooks skip subagents via `agent_id` guard and use fail-open design (`|| exit 0` on stdin/jq).
 
 ## Structure Notes
 
