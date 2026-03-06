@@ -63,6 +63,24 @@ else
   errors=$((errors + 1))
 fi
 
+# Hooks
+if [ ! -f "$SCRIPT_DIR/hooks.json" ]; then
+  echo "  FAIL: hooks.json missing"
+  errors=$((errors + 1))
+else
+  echo "  OK: hooks.json"
+fi
+
+HOOK_SCRIPTS=(swift-patterns.sh swift-skill-nudge.sh verification-nudge.sh claude-md-bloat-guard.sh)
+for hook in "${HOOK_SCRIPTS[@]}"; do
+  if [ -f "$SCRIPT_DIR/hooks/$hook" ] && [ -x "$SCRIPT_DIR/hooks/$hook" ]; then
+    echo "  OK: hooks/$hook"
+  else
+    echo "  FAIL: hooks/$hook missing or not executable"
+    errors=$((errors + 1))
+  fi
+done
+
 echo ""
 if [ "$errors" -gt 0 ]; then
   echo "==> Validation failed with $errors error(s)"
