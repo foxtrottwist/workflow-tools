@@ -4,7 +4,7 @@
 
 Claude Code plugin packaging twenty-one skills, four specialized agents, and a macOS Shortcuts MCP server. This repo is the **canonical source** for all bundled skills and agents — edit them directly here.
 
-**Productivity skills:** iter, writing, prompt-dev, sharpen, chat-migration, code-audit, azure-devops.
+**Productivity skills:** iter, writing, instruct-dev, sharpen, chat-migration, code-audit, azure-devops.
 
 **Development discipline skills:** tdd, systematic-debugging, worktree.
 

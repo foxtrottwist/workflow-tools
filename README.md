@@ -10,7 +10,7 @@ A Claude Code plugin bundling twenty skills and a macOS Shortcuts MCP server for
 |-------|---------|--------------|
 | **iter** | `/iter`, "help me build", "implement", "research" | Task orchestration with verification gates. Auto-detects development or knowledge work mode. |
 | **writing** | `/write`, "compose", "draft", "proofread" | Written communication with quality standards. Compose, proofread, or create professional content. |
-| **prompt-dev** | `/prompt-dev`, "create a prompt", "build a template" | Prompt template development following Claude 4 conventions. |
+| **instruct-dev** | `/instruct-dev`, "create a prompt", "write a CLAUDE.md", "review my skill" | Instruction authoring for prompt templates, CLAUDE.md, skills, and agent definitions. |
 | **sharpen** | "sharpen", "refine my thinking", "focus this idea" | Refine raw thoughts into focused statements of intent through guided questioning. |
 | **chat-migration** | `/chat-migration`, "save context", "hitting context limit" | Capture conversation context into structured handoff documents for new chats. |
 | **code-audit** | `/code-audit`, "verify documentation", "check docs match code" | Documentation-code alignment verification using parallel subagents. |
@@ -47,7 +47,15 @@ A Claude Code plugin bundling twenty skills and a macOS Shortcuts MCP server for
 
 ## Install
 
-Add the marketplace and install the plugin:
+The plugin installs across all three Claude platforms from a single marketplace:
+
+| Platform | Where to install | Runtime support |
+|----------|-----------------|-----------------|
+| **Claude Code** | `/plugin` command or CLI | Full — skills, agents, MCP, hooks |
+| **Cowork** | Plugins sidebar → Marketplace | Full — skills, agents, connectors |
+| **Claude AI** | Customize sidebar → Marketplace | Skills load; agent/MCP/hook support may vary |
+
+### Claude Code
 
 ```
 /plugin marketplace add Foxtrottwist/workflow-tools
@@ -60,6 +68,10 @@ Or from the CLI:
 claude plugin marketplace add Foxtrottwist/workflow-tools
 claude plugin install workflow-tools@workflow-tools
 ```
+
+### Cowork & Claude AI
+
+Browse the marketplace from the sidebar and install directly. The same plugin package is used across all platforms.
 
 ## Development
 
@@ -94,7 +106,7 @@ workflow-tools/
 ├── skills/
 │   ├── iter/
 │   ├── writing/
-│   ├── prompt-dev/
+│   ├── instruct-dev/
 │   ├── sharpen/
 │   ├── chat-migration/
 │   ├── code-audit/

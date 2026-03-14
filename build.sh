@@ -4,7 +4,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS=(iter writing prompt-dev chat-migration code-audit azure-devops sharpen tdd systematic-debugging worktree swift-dev swift-concurrency swiftui-expert-skill axiom-accessibility-diag foundation-models-ref foundation-models foundation-models-diag axiom-swift-testing axiom-swiftdata axiom-swiftui-26-ref axiom-swiftui-debugging swizzle)
+SKILLS=(iter writing instruct-dev chat-migration code-audit azure-devops sharpen tdd systematic-debugging worktree swift-dev swift-concurrency swiftui-expert-skill axiom-accessibility-diag foundation-models-ref foundation-models foundation-models-diag axiom-swift-testing axiom-swiftdata axiom-swiftui-26-ref axiom-swiftui-debugging swizzle)
 AGENTS=(researcher verifier orchestrator editor)
 MCP_DIR="$SCRIPT_DIR/mcp-servers/shortcuts-mcp"
 
