@@ -7,8 +7,8 @@
   "plugins": [
     {
       "name": "workflow-tools",
-      "description": "Twenty-two skills and four specialized agents for productivity workflows and Swift/iOS development. Includes iter, writing, instruct-dev, sharpen, chat-migration, code-audit, azure-devops, swizzle, tdd, systematic-debugging, worktree, plus swift-dev hub with 8 specialist skills (SwiftUI, SwiftData, concurrency, accessibility, Swift Testing, Foundation Models ref/discipline/diagnostics). Agents: researcher, verifier, orchestrator, editor. Bundled macOS Shortcuts MCP server.",
-      "version": "0.17.0",
+      "description": "Twenty-three skills and four specialized agents for productivity workflows and Swift/iOS development. Includes iter, writing, instruct-dev, sharpen, chat-migration, code-audit, azure-devops, swizzle, tdd, systematic-debugging, worktree, cws (cross-session working state), plus swift-dev hub with 8 specialist skills (SwiftUI, SwiftData, concurrency, accessibility, Swift Testing, Foundation Models ref/discipline/diagnostics). Agents: researcher, verifier, orchestrator, editor. Bundled macOS Shortcuts MCP server. Global workflow hooks: session start/stop CWS surfacing, context preservation, commit reminders, CLAUDE.md validation, pre-compaction state checks.",
+      "version": "0.18.0",
       "source": "./",
       "repository": "https://github.com/Foxtrottwist/workflow-tools",
       "license": "MIT",
