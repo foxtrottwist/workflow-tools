@@ -22,6 +22,7 @@ Consult specialist skills for detailed guidance. Read the SKILL.md (and any `ref
 | `foundation-models` | Foundation Models discipline — anti-patterns, decision trees, pressure scenarios |
 | `foundation-models-diag` | Foundation Models diagnostics — error triage, Instruments profiling, production crisis |
 | `axiom-swiftdata` | SwiftData — @Model, @Query, @Relationship, CloudKit, migration, performance |
+| `swift-structured-logging` | Structured logging — SBLogger pattern, category setup, message format, nonisolated Logger |
 
 ### Foundation Models References
 
