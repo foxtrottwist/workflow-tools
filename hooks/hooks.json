@@ -36,7 +36,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "mcp__xcode__BuildProject|mcp__xcode__RunAllTests|mcp__xcode__RunSomeTests|mcp__plugin_workflow-tools_shortcuts__run_shortcut",
+        "matcher": "mcp__xcode__BuildProject|mcp__xcode__RunAllTests|mcp__xcode__RunSomeTests",
         "hooks": [
           {
             "type": "command",

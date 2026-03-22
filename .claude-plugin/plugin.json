@@ -1,7 +1,7 @@
 {
   "name": "workflow-tools",
-  "version": "0.20.0",
-  "description": "Productivity and development workflow toolkit. Task orchestration with verification gates, TDD discipline, systematic debugging, git worktree isolation, written communication with quality standards, instruction authoring and agent file optimization, intent refinement, conversation context migration, documentation-code alignment auditing, Azure DevOps PR operations, Swizzle CLI eval pipelines and FM testing, and Swift/iOS development skills (SwiftUI, SwiftData, concurrency, accessibility). Specialized agents for research, verification, orchestration, and editorial review. Includes macOS Shortcuts automation via MCP.",
+  "version": "0.21.0",
+  "description": "Productivity and development workflow toolkit. Task orchestration with verification gates, TDD discipline, systematic debugging, git worktree isolation, written communication with quality standards, instruction authoring and agent file optimization, intent refinement, conversation context migration, documentation-code alignment auditing, Azure DevOps PR operations, Swizzle CLI eval pipelines and FM testing, and Swift/iOS development skills (SwiftUI, SwiftData, concurrency, accessibility). Specialized agents for research, verification, orchestration, and editorial review.",
   "author": {
     "name": "Law Horne"
   },

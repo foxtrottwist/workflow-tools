@@ -1,14 +1,14 @@
 {
   "name": "workflow-tools",
-  "description": "Productivity and development workflow toolkit with task orchestration, TDD discipline, systematic debugging, git worktree isolation, writing quality standards, instruction authoring and agent file optimization, intent refinement, context migration, code auditing, Azure DevOps operations, Swift/iOS development skills, and macOS Shortcuts automation.",
+  "description": "Productivity and development workflow toolkit with task orchestration, TDD discipline, systematic debugging, git worktree isolation, writing quality standards, instruction authoring and agent file optimization, intent refinement, context migration, code auditing, Azure DevOps operations, and Swift/iOS development skills.",
   "owner": {
     "name": "Law Horne"
   },
   "plugins": [
     {
       "name": "workflow-tools",
-      "description": "Twenty-four skills and four specialized agents for productivity workflows and Swift/iOS development. Includes iter, writing, instruct-dev, sharpen, chat-migration, code-audit, azure-devops, swizzle, tdd, systematic-debugging, worktree, cws (cross-session working state), plus swift-dev hub with 8 specialist skills (SwiftUI, SwiftData, concurrency, accessibility, Swift Testing, Foundation Models ref/discipline/diagnostics). Agents: researcher, verifier, orchestrator, editor. Bundled macOS Shortcuts MCP server. Global workflow hooks: session start/stop CWS surfacing, context preservation, commit reminders, CLAUDE.md validation, pre-compaction state checks.",
-      "version": "0.20.0",
+      "description": "Twenty-four skills and four specialized agents for productivity workflows and Swift/iOS development. Includes iter, writing, instruct-dev, sharpen, chat-migration, code-audit, azure-devops, swizzle, tdd, systematic-debugging, worktree, cws (cross-session working state), plus swift-dev hub with 8 specialist skills (SwiftUI, SwiftData, concurrency, accessibility, Swift Testing, Foundation Models ref/discipline/diagnostics). Agents: researcher, verifier, orchestrator, editor. Global workflow hooks: session start/stop CWS surfacing, context preservation, commit reminders, CLAUDE.md validation, pre-compaction state checks.",
+      "version": "0.21.0",
       "source": "./",
       "repository": "https://github.com/Foxtrottwist/workflow-tools",
       "license": "MIT",
@@ -26,10 +26,6 @@
 
         "agents",
         "intent-refinement",
-        "macos-shortcuts",
-        "tts",
-        "speak",
-        "voice",
         "swift",
         "swiftui",
         "ios",

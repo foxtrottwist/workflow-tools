@@ -6,7 +6,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILLS=(iter writing instruct-dev chat-migration code-audit azure-devops sharpen dispatch tdd systematic-debugging worktree swift-dev swift-concurrency swiftui-expert-skill axiom-accessibility-diag foundation-models-ref foundation-models foundation-models-diag axiom-swift-testing axiom-swiftdata axiom-swiftui-26-ref axiom-swiftui-debugging swizzle cws)
 AGENTS=(researcher verifier orchestrator editor)
-MCP_DIR="$SCRIPT_DIR/mcp-servers/shortcuts-mcp"
 
 echo "==> Validating workflow-tools plugin"
 
@@ -47,21 +46,6 @@ for agent in "${AGENTS[@]}"; do
     errors=$((errors + 1))
   fi
 done
-
-# MCP artifacts
-if [ -f "$MCP_DIR/dist/server.js" ]; then
-  echo "  OK: mcp-servers/shortcuts-mcp/dist/server.js"
-else
-  echo "  FAIL: mcp-servers/shortcuts-mcp/dist/server.js missing"
-  errors=$((errors + 1))
-fi
-
-if [ -d "$MCP_DIR/node_modules" ]; then
-  echo "  OK: mcp-servers/shortcuts-mcp/node_modules"
-else
-  echo "  FAIL: mcp-servers/shortcuts-mcp/node_modules missing"
-  errors=$((errors + 1))
-fi
 
 # Hooks
 if [ ! -f "$SCRIPT_DIR/hooks/hooks.json" ]; then
