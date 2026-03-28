@@ -10,19 +10,30 @@ Hub skill for Swift/iOS development. Provides quick-reference rules and routes t
 
 Consult specialist skills for detailed guidance. Read the SKILL.md (and any `references/` files) before writing code in that area.
 
+### Bundled skills (this plugin)
+
 | Skill | When to consult |
 |-------|----------------|
-| `swiftui-expert-skill` | Building or reviewing SwiftUI views — state, animations, performance, Liquid Glass |
-| `swift-concurrency` | Async/await, actors, sendable, tasks, Swift 6 migration |
-| `axiom-swiftui-debugging` | View not updating, preview crashes, layout issues — use the decision trees |
 | `axiom-swiftui-26-ref` | iOS 26 new features — Liquid Glass toolbars, WebView, rich text, @Animatable, sliders |
-| `axiom-swift-testing` | Writing unit tests — @Test/@Suite, #expect/#require, parameterized tests, fast test setup |
 | `axiom-accessibility-diag` | VoiceOver issues, Dynamic Type, contrast, touch targets, App Store review prep |
 | `foundation-models-ref` | Foundation Models — LanguageModelSession, @Generable, @Guide, Tool protocol, streaming |
 | `foundation-models` | Foundation Models discipline — anti-patterns, decision trees, pressure scenarios |
 | `foundation-models-diag` | Foundation Models diagnostics — error triage, Instruments profiling, production crisis |
 | `axiom-swiftdata` | SwiftData — @Model, @Query, @Relationship, CloudKit, migration, performance |
 | `swift-structured-logging` | Structured logging — SBLogger pattern, category setup, message format, nonisolated Logger |
+
+### External skills (installed separately)
+
+| Skill | When to consult |
+|-------|----------------|
+| `swiftui-pro` | Building or reviewing SwiftUI views — modern APIs, state, animations, accessibility, design |
+| `swift-concurrency-pro` | Async/await, actors, sendable, Swift 6.2 — hotspots, bug patterns, compiler diagnostics |
+| `swift-testing-pro` | Writing unit tests — @Test/@Suite, #expect/#require, exit tests, attachments, migration |
+| `swiftdata-pro` | SwiftData correctness — predicate gotchas, delete rules, CloudKit constraints, class inheritance |
+| `swiftui-performance-audit` | Performance diagnosis — invalidation storms, identity churn, layout thrash, profiling guidance |
+| `swiftui-view-refactor` | View structure — MV pattern, subview extraction, view ordering, stable view trees |
+| `swiftui-ui-patterns` | Component patterns — TabView, NavigationStack, sheets, forms, grids, async state, deeplinks |
+| `ios-debugger-agent` | Simulator debugging via XcodeBuildMCP — build, run, UI interaction, logs |
 
 ### Foundation Models References
 
@@ -130,4 +141,4 @@ Run the shared lint script to scan for known anti-patterns:
 ```
 ../../scripts/swift-pattern-lint.sh <project-dir> <skill>/references/lint-patterns.json
 ```
-Skills with lint patterns: `swift-concurrency`, `swiftui-expert-skill`, `axiom-accessibility-diag`.
+Skills with lint patterns: `axiom-accessibility-diag`.
