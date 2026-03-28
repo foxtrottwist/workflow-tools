@@ -4,11 +4,11 @@
 
 Claude Code plugin packaging twenty skills, four specialized agents, and a macOS Shortcuts MCP server. This repo is the **canonical source** for all bundled skills and agents — edit them directly here.
 
-**Productivity skills:** iter, writing, instruct-dev, sharpen, chat-migration, code-audit, azure-devops.
+**Productivity skills:** iter, writing, instruct-dev, sharpen, chat-migration, code-audit, azure-devops, scaffold.
 
 **Development discipline skills:** tdd, systematic-debugging, worktree.
 
-**Swift/iOS skills:** swift-dev hub routes to bundled specialists (Foundation Models, SwiftData, accessibility, iOS 26 ref) and external community skills (TwoStraws, Dimillian) installed via dotfiles.
+**Swift/iOS skills (bundled):** Foundation Models (ref/discipline/diag), axiom-swiftdata, axiom-accessibility-diag, axiom-swiftui-26-ref. External community skills (TwoStraws, Dimillian) installed via dotfiles handle SwiftUI, concurrency, testing, and performance.
 
 ## Key Commands
 

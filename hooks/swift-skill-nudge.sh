@@ -18,7 +18,7 @@ if echo "$PROMPT" | grep -qiE '\.swift|swiftui|swiftdata|@model|@observable|foun
 {
   "hookSpecificOutput": {
     "hookEventName": "UserPromptSubmit",
-    "additionalContext": "Swift/iOS work detected. Check available skills before starting: swift-dev (conventions and routing), swiftui-expert-skill (SwiftUI patterns), swift-concurrency (async/await, actors), workflow-tools:foundation-models (on-device AI). Invoke the relevant skill — don't rely on general knowledge for domain-specific patterns."
+    "additionalContext": "Swift/iOS work detected. Check available skills before starting: swiftui-pro (SwiftUI review), swift-concurrency-pro (concurrency), swift-testing-pro (tests), swiftdata-pro (SwiftData), swiftui-performance-audit (performance), foundation-models-ref (on-device AI). Invoke the relevant skill — don't rely on general knowledge for domain-specific patterns."
   }
 }
 EOF

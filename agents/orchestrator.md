@@ -99,7 +99,7 @@ When decomposing, check available skills in the system reminders. If a task alig
 - Skill: tdd (implementation task — tests before code)
 - Skill: writing (content creation — quality standards)
 - Skill: systematic-debugging (bug investigation — root cause first)
-- Skill: swift-dev (Swift/iOS work — routes to specialists)
+- Skill: swiftui-pro (SwiftUI review — modern APIs, state, accessibility)
 ```
 
 Mapped skills provide domain workflows and constraints that general prompts lack. Always prefer skill-backed tasks over raw prompts.

@@ -56,7 +56,7 @@ Task tool call:
 
     Before writing any code, review the codebase you're working in — read existing files, understand patterns and conventions already in use.
 
-    Review the available skills listed in your system reminders. If any skill is relevant to this task (by name alone you can tell — e.g., swift-dev for Swift work, swiftui-expert-skill for SwiftUI, systematic-debugging for bugs), invoke it. Skills provide domain-specific workflows and constraints you won't have otherwise.
+    Review the available skills listed in your system reminders. If any skill is relevant to this task (by name alone you can tell — e.g., swiftui-pro for SwiftUI, swift-concurrency-pro for concurrency, systematic-debugging for bugs), invoke it. Skills provide domain-specific workflows and constraints you won't have otherwise.
 
     Read .claude/guardrails.md for accumulated lessons before starting.
     Invoke the tdd skill — write failing tests before production code (RED-GREEN-REFACTOR).

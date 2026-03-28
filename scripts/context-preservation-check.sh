@@ -13,7 +13,7 @@ cat <<'EOF'
 {
   "hookSpecificOutput": {
     "hookEventName": "SessionStart",
-    "additionalContext": "Session start reminder: (1) Delegate exploration and multi-file tasks to subagents via the Agent tool — do not explore or implement inline. (2) Check available skills before starting work (swift-dev for Swift/iOS, workflow-tools for orchestration). (3) Keep this context for planning and reviewing results only."
+    "additionalContext": "Session start reminder: (1) Delegate exploration and multi-file tasks to subagents via the Agent tool — do not explore or implement inline. (2) Check available skills before starting work (swiftui-pro for SwiftUI, workflow-tools for orchestration). (3) Keep this context for planning and reviewing results only."
   }
 }
 EOF
