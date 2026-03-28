@@ -44,6 +44,18 @@ structure: context → approach → lessons learned
 evidence: code examples and performance data
 ```
 
+### Peer/Team (Teams, email, text with colleagues)
+```
+tone: casual-professional, down-to-earth
+structure: purpose → content → wrapup (adaptive by channel)
+evidence: collaborative framing, soft qualifiers for outside expertise
+punctuation: clarity-driven — periods for structure, relaxed elsewhere
+capitalization: first word of messages and after names, relaxed mid-sentence
+avoid: em dash chains, forced formality, jargon-as-authority
+```
+
+See [communication-framework.md](communication-framework.md) for full framework including context threading, gap-based recaps, and conversation state tracking.
+
 ### Educational (blog, tutorials)
 ```
 tone: conversational and empowering

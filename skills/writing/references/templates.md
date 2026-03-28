@@ -80,10 +80,61 @@ tone: [from standards] OR "match voice samples"
 
 ---
 
+## Team Communication
+
+Templates for peer/team messages. Scale structure to the channel. See [communication-framework.md](communication-framework.md) for full framework.
+
+### Input Structure
+```xml
+<team_message>
+channel: [email|teams|text]
+recipient: [name or role]
+relationship: [colleague|manager|cross-functional|community]
+intent: [specific purpose/goal]
+content: [key points or partial draft] OR "none"
+conversation_context: [prior messages or "new thread"]
+</team_message>
+```
+
+### Email Template (Full Structure)
+```
+Purpose: Opening line — why you're writing
+Content: Context, details, supporting information
+Wrapup: Clear next step or ask
+```
+
+### Teams/Chat Template (Compressed)
+```
+Purpose + key info in first sentence
+Supporting detail if needed (often omitted)
+Action or question (can be implicit)
+```
+
+### Text Template (Minimal)
+```
+Purpose is the message — one or two sentences max
+```
+
+### Constraints
+- Apply casual-professional tone (see standards.md Peer/Team voice)
+- Use gap-based context threading for ongoing conversations
+- Collaborative framing for technical content
+- No forced formality unless explicitly requested
+- Preserve user's voice when partial draft provided
+- Plain text only — no markdown formatting (no bold, bullets, headers, backticks)
+- Purpose should stand alone (BLUF) — if the reader stops at the first sentence, they got the point
+- Active voice when action ownership matters
+
+### Output
+Plain text message only, ready to copy-paste into any channel.
+
+---
+
 ## Pattern Summary
 
 | Task | Input Needed | Output |
 |------|--------------|--------|
 | Compose message | type, relationship, intent | Ready-to-send text |
+| Team communication | channel, recipient, intent, context | Ready-to-send message |
 | Proofread | text, preserve settings | Corrected text only |
 | Professional content | type, purpose, key points | Polished content |

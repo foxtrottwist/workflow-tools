@@ -1,6 +1,6 @@
 ---
 name: writing
-description: "Use when composing emails, texts, notes, or professional content. Triggers on \"write\", \"compose\", \"draft\", \"proofread\", \"fix grammar\", \"help me say\", \"save this phrase\", or requests to create professional communication."
+description: "Use when composing emails, texts, notes, or professional content. Triggers on \"write\", \"compose\", \"draft\", \"proofread\", \"fix grammar\", \"help me say\", \"save this phrase\", \"reply to\", \"respond to\", \"Teams message\", \"Slack message\", \"send a message\", or requests to create professional communication. Also use when the user wants to write a message to a coworker, manager, or team member."
 ---
 
 # Writing
@@ -26,16 +26,49 @@ Infer tone from relationship context (professional, colleague, casual). Use **As
 
 ## Path: Compose Message
 
-**Single-shot**. See [references/templates.md](references/templates.md) for input structure.
+See [references/templates.md](references/templates.md) for input structure.
+
+### Channel Detection
+
+Infer channel from request language:
+- "email", "send an email" → **email** (full Purpose/Content/Wrapup)
+- "Teams", "message", "chat", "ping" → **teams** (compressed)
+- "text", "iMessage" → **text** (minimal)
+
+If channel is ambiguous, infer from relationship and length — short messages to colleagues default to teams, longer or more formal messages default to email.
+
+### Team/Peer Messages
+
+For messages to team members (colleagues, managers, cross-functional, community), apply the communication framework:
+
+1. Detect channel and scale structure accordingly
+2. Apply [references/communication-framework.md](references/communication-framework.md) — Purpose/Content/Wrapup adaptive to channel
+3. Apply Peer/Team voice from [references/standards.md](references/standards.md)
+4. Use appropriate snippets from [references/snippets.md](references/snippets.md) when applicable
+5. Output: Ready-to-send message only
+
+### Context Threading
+
+For ongoing conversations, check for existing state in `.workflow.local/writing/{slug}/conversation.json`:
+- **If state exists**: Calculate gap since last message and apply recap rules from the framework
+- **If new thread**: Create conversation state after composing
+
+Log each composed message with timestamp, channel, recipient, and one-line summary.
+
+### General Messages
+
+For non-team messages (client, department, formal), use standard composition:
 
 1. Gather: type, relationship, intent, key points
 2. Apply writing standards from [references/standards.md](references/standards.md)
 3. Use appropriate snippets from [references/snippets.md](references/snippets.md) when applicable
 4. Output: Ready-to-send message only
 
+### Shared Rules
+
 If the user provides partial context (e.g., "write an email to my manager" without specifying intent), infer from context when possible. Use **AskUserQuestion** for missing critical details — intent and key points — that can't be reasonably inferred. Combine into a single question with multiSelect when asking about multiple facets.
 
-**No commentary, no alternatives.** Just the message.
+**No commentary, no alternatives.** Just the message. All composed messages must be plain text — no markdown formatting (no bold, bullets, headers, or backticks). Messages should copy-paste cleanly into any channel.
 
 ## Path: Proofread
 
@@ -133,6 +166,7 @@ Append discoveries to `guardrails.md`:
 
 ## References
 
+- **Communication framework**: [references/communication-framework.md](references/communication-framework.md) — Purpose/Content/Wrapup structure, context threading, tone rules
 - **Writing standards**: [references/standards.md](references/standards.md) — Voice requirements, prohibited terms, success criteria
 - **Templates**: [references/templates.md](references/templates.md) — Input/output patterns for each task type
 - **Snippets**: [references/snippets.md](references/snippets.md) — Reusable boilerplate, openers, closers, common phrases
