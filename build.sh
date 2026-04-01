@@ -55,7 +55,7 @@ else
   echo "  OK: hooks/hooks.json"
 fi
 
-HOOK_SCRIPTS=(swift-patterns.sh swift-skill-nudge.sh verification-nudge.sh claude-md-bloat-guard.sh)
+HOOK_SCRIPTS=(swift-patterns.sh swift-skill-nudge.sh verification-nudge.sh claude-md-bloat-guard.sh skill-quality-guard.sh)
 for hook in "${HOOK_SCRIPTS[@]}"; do
   if [ -f "$SCRIPT_DIR/hooks/$hook" ] && [ -x "$SCRIPT_DIR/hooks/$hook" ]; then
     echo "  OK: hooks/$hook"
