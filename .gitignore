@@ -12,3 +12,10 @@
 
 # Build output
 dist/
+
+# Local Claude Code files — override global .claude/ ignore for repo-specific tools
+!.claude/skills/
+!.claude/skills/publish/
+!.claude/skills/publish/SKILL.md
+!.claude/hooks/
+!.claude/hooks/skill-quality-guard-local.sh

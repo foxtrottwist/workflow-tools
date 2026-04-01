@@ -1,9 +1,9 @@
 ---
-name: release
-description: "Cut and publish a versioned release of the workflow-tools plugin. Use when bumping the plugin version, tagging a release, publishing to GitHub, or packaging skills for distribution. Triggers on: 'release', 'cut a release', 'publish version', 'bump version', 'tag and release'."
+name: publish
+description: "Cut and publish a versioned release of the workflow-tools plugin. Use when bumping the plugin version, tagging a release, publishing to GitHub, or packaging skills for distribution. Triggers on: 'publish', 'cut a release', 'publish version', 'bump version', 'tag and release'."
 ---
 
-# Release
+# Publish
 
 Build, version, tag, and publish a new release of the workflow-tools plugin to GitHub.
 
