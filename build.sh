@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Validates plugin structure. All artifacts are pre-built by sync.sh.
+# Validates plugin structure. Run package.sh to build distributable .skill files.
 # Runs locally or in CI.
 set -euo pipefail
 
@@ -68,7 +68,6 @@ done
 echo ""
 if [ "$errors" -gt 0 ]; then
   echo "==> Validation failed with $errors error(s)"
-  echo "    Run sync.sh from workflow-systems to populate artifacts."
   exit 1
 fi
 

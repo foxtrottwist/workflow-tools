@@ -9,3 +9,6 @@
 # Skill artifacts
 *.local
 *.local.*
+
+# Build output
+dist/
