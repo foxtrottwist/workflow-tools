@@ -1,6 +1,6 @@
 # workflow-tools
 
-A Claude Code plugin bundling eleven skills and four specialized agents for productivity and development workflows.
+A Claude Code plugin bundling ten skills and four specialized agents for productivity and development workflows.
 
 ## What's included
 
@@ -15,7 +15,6 @@ A Claude Code plugin bundling eleven skills and four specialized agents for prod
 | **chat-migration** | `/chat-migration`, "save context", "hitting context limit" | Capture conversation context into structured handoff documents for new chats. |
 | **code-audit** | `/code-audit`, "verify documentation", "check docs match code" | Documentation-code alignment verification using parallel subagents. |
 | **azure-devops** | "review PR", "PR comments", "az repos", "az devops" | Azure DevOps CLI recipes for PR operations via `az repos` and `az devops invoke`. |
-| **cws** | Session start/stop | Cross-session working state. Lightweight context persistence across conversations. |
 | **scaffold** | "set up project", "scaffold" | Set up a project for agent-assisted development with feedback loops and guardrails. |
 
 ### Development Discipline Skills
@@ -76,8 +75,7 @@ workflow-tools/
 │   ├── azure-devops/
 │   ├── tdd/
 │   ├── systematic-debugging/
-│   ├── scaffold/
-│   └── cws/
+│   └── scaffold/
 ├── agents/
 │   ├── researcher.md
 │   ├── verifier.md

@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "workflow-tools",
-      "description": "Eleven skills and four specialized agents for productivity workflows. Includes iter, writing, instruction-dev, sharpen, chat-migration, code-audit, azure-devops, tdd, systematic-debugging, scaffold, and cws (cross-session working state). Agents: researcher, verifier, orchestrator, editor.",
+      "description": "Ten skills and four specialized agents for productivity workflows. Includes iter, writing, instruction-dev, sharpen, chat-migration, code-audit, azure-devops, tdd, systematic-debugging, and scaffold. Agents: researcher, verifier, orchestrator, editor.",
       "version": "0.27.0",
       "source": "./",
       "repository": "https://github.com/Foxtrottwist/workflow-tools",
