@@ -4,7 +4,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS=(iter writing instruction-dev chat-migration code-audit azure-devops sharpen dispatch tdd systematic-debugging worktree scaffold cws)
+SKILLS=(iter writing instruction-dev chat-migration code-audit azure-devops sharpen dispatch tdd systematic-debugging scaffold cws)
 AGENTS=(researcher verifier orchestrator editor)
 
 echo "==> Validating workflow-tools plugin"

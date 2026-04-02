@@ -1,6 +1,6 @@
 # workflow-tools
 
-A Claude Code plugin bundling thirteen skills and four specialized agents for productivity and development workflows.
+A Claude Code plugin bundling twelve skills and four specialized agents for productivity and development workflows.
 
 ## What's included
 
@@ -25,7 +25,6 @@ A Claude Code plugin bundling thirteen skills and four specialized agents for pr
 |-------|---------|--------------|
 | **tdd** | Starting feature work, bug fixes, refactoring | Enforce RED-GREEN-REFACTOR discipline. No production code without a failing test. |
 | **systematic-debugging** | Bugs, test failures, unexpected behavior | Find root cause before proposing fixes. Investigation-first approach. |
-| **worktree** | Starting new branches, parallel sessions | Create isolated git worktrees for concurrent Claude Code sessions. |
 
 ### Agents
 
@@ -79,7 +78,6 @@ workflow-tools/
 │   ├── azure-devops/
 │   ├── tdd/
 │   ├── systematic-debugging/
-│   ├── worktree/
 │   ├── scaffold/
 │   └── cws/
 ├── agents/
