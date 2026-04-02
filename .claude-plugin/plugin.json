@@ -1,6 +1,6 @@
 {
   "name": "workflow-tools",
-  "version": "0.26.0",
+  "version": "0.27.0",
   "description": "Productivity and development workflow toolkit. Task orchestration with verification gates, TDD discipline, systematic debugging, git worktree isolation, written communication with quality standards, instruction authoring and agent file optimization, intent refinement, conversation context migration, documentation-code alignment auditing, and Azure DevOps PR operations. Specialized agents for research, verification, orchestration, and editorial review.",
   "author": {
     "name": "Law Horne"

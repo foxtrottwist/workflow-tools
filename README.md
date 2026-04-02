@@ -1,6 +1,6 @@
 # workflow-tools
 
-A Claude Code plugin bundling twelve skills and four specialized agents for productivity and development workflows.
+A Claude Code plugin bundling eleven skills and four specialized agents for productivity and development workflows.
 
 ## What's included
 
@@ -12,7 +12,6 @@ A Claude Code plugin bundling twelve skills and four specialized agents for prod
 | **writing** | `/write`, "compose", "draft", "proofread" | Written communication with quality standards. Compose, proofread, or create professional content. |
 | **instruction-dev** | `/instruction-dev`, "create a prompt", "write a CLAUDE.md", "review my skill" | Instruction authoring for prompt templates, CLAUDE.md, skills, and agent definitions. |
 | **sharpen** | "sharpen", "refine my thinking", "focus this idea" | Refine raw thoughts into focused statements of intent through guided questioning. |
-| **dispatch** | `/dispatch` | Bridge a sharpened spec into an active code session. Pairs with sharpen. |
 | **chat-migration** | `/chat-migration`, "save context", "hitting context limit" | Capture conversation context into structured handoff documents for new chats. |
 | **code-audit** | `/code-audit`, "verify documentation", "check docs match code" | Documentation-code alignment verification using parallel subagents. |
 | **azure-devops** | "review PR", "PR comments", "az repos", "az devops" | Azure DevOps CLI recipes for PR operations via `az repos` and `az devops invoke`. |
@@ -72,7 +71,6 @@ workflow-tools/
 │   ├── writing/
 │   ├── instruction-dev/
 │   ├── sharpen/
-│   ├── dispatch/
 │   ├── chat-migration/
 │   ├── code-audit/
 │   ├── azure-devops/
