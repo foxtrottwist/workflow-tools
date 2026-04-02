@@ -4,7 +4,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS=(iter writing instruction-dev chat-migration code-audit azure-devops sharpen dispatch tdd systematic-debugging worktree scaffold axiom-accessibility-diag foundation-models-ref foundation-models foundation-models-diag axiom-swiftdata axiom-swiftui-26-ref swizzle cws)
+SKILLS=(iter writing instruction-dev chat-migration code-audit azure-devops sharpen dispatch tdd systematic-debugging worktree scaffold cws)
 AGENTS=(researcher verifier orchestrator editor)
 
 echo "==> Validating workflow-tools plugin"
@@ -55,7 +55,7 @@ else
   echo "  OK: hooks/hooks.json"
 fi
 
-HOOK_SCRIPTS=(swift-patterns.sh swift-skill-nudge.sh verification-nudge.sh claude-md-bloat-guard.sh skill-quality-guard.sh)
+HOOK_SCRIPTS=(verification-nudge.sh claude-md-bloat-guard.sh skill-quality-guard.sh)
 for hook in "${HOOK_SCRIPTS[@]}"; do
   if [ -f "$SCRIPT_DIR/hooks/$hook" ] && [ -x "$SCRIPT_DIR/hooks/$hook" ]; then
     echo "  OK: hooks/$hook"

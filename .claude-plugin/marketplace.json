@@ -1,14 +1,14 @@
 {
   "name": "workflow-tools",
-  "description": "Productivity and development workflow toolkit with task orchestration, TDD discipline, systematic debugging, git worktree isolation, writing quality standards, instruction authoring and agent file optimization, intent refinement, context migration, code auditing, Azure DevOps operations, and Swift/iOS development skills.",
+  "description": "Productivity and development workflow toolkit with task orchestration, TDD discipline, systematic debugging, git worktree isolation, writing quality standards, instruction authoring and agent file optimization, intent refinement, context migration, code auditing, and Azure DevOps operations.",
   "owner": {
     "name": "Law Horne"
   },
   "plugins": [
     {
       "name": "workflow-tools",
-      "description": "Twenty skills and four specialized agents for productivity workflows and Swift/iOS development. Includes iter, writing, instruct-dev, sharpen, chat-migration, code-audit, azure-devops, swizzle, tdd, systematic-debugging, worktree, cws (cross-session working state), plus swift-dev hub with specialist skills (SwiftData, accessibility, Foundation Models ref/discipline/diagnostics, iOS 26 reference). SwiftUI, concurrency, testing, and performance skills replaced by external community skills (TwoStraws, Dimillian). Agents: researcher, verifier, orchestrator, editor.",
-      "version": "0.25.0",
+      "description": "Thirteen skills and four specialized agents for productivity workflows. Includes iter, writing, instruction-dev, sharpen, dispatch, chat-migration, code-audit, azure-devops, tdd, systematic-debugging, worktree, scaffold, and cws (cross-session working state). Agents: researcher, verifier, orchestrator, editor.",
+      "version": "0.26.0",
       "source": "./",
       "repository": "https://github.com/Foxtrottwist/workflow-tools",
       "license": "MIT",
@@ -25,12 +25,7 @@
         "azure-devops",
 
         "agents",
-        "intent-refinement",
-        "swift",
-        "swiftui",
-        "ios",
-        "swiftdata",
-        "concurrency"
+        "intent-refinement"
       ]
     }
   ]

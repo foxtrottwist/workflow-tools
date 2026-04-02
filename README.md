@@ -1,6 +1,6 @@
 # workflow-tools
 
-A Claude Code plugin bundling twenty skills and a macOS Shortcuts MCP server for productivity and Swift/iOS development workflows.
+A Claude Code plugin bundling thirteen skills and four specialized agents for productivity and development workflows.
 
 ## What's included
 
@@ -10,11 +10,14 @@ A Claude Code plugin bundling twenty skills and a macOS Shortcuts MCP server for
 |-------|---------|--------------|
 | **iter** | `/iter`, "help me build", "implement", "research" | Task orchestration with verification gates. Auto-detects development or knowledge work mode. |
 | **writing** | `/write`, "compose", "draft", "proofread" | Written communication with quality standards. Compose, proofread, or create professional content. |
-| **instruct-dev** | `/instruct-dev`, "create a prompt", "write a CLAUDE.md", "review my skill" | Instruction authoring for prompt templates, CLAUDE.md, skills, and agent definitions. |
+| **instruction-dev** | `/instruction-dev`, "create a prompt", "write a CLAUDE.md", "review my skill" | Instruction authoring for prompt templates, CLAUDE.md, skills, and agent definitions. |
 | **sharpen** | "sharpen", "refine my thinking", "focus this idea" | Refine raw thoughts into focused statements of intent through guided questioning. |
+| **dispatch** | `/dispatch` | Bridge a sharpened spec into an active code session. Pairs with sharpen. |
 | **chat-migration** | `/chat-migration`, "save context", "hitting context limit" | Capture conversation context into structured handoff documents for new chats. |
 | **code-audit** | `/code-audit`, "verify documentation", "check docs match code" | Documentation-code alignment verification using parallel subagents. |
 | **azure-devops** | "review PR", "PR comments", "az repos", "az devops" | Azure DevOps CLI recipes for PR operations via `az repos` and `az devops invoke`. |
+| **cws** | Session start/stop | Cross-session working state. Lightweight context persistence across conversations. |
+| **scaffold** | "set up project", "scaffold" | Set up a project for agent-assisted development with feedback loops and guardrails. |
 
 ### Development Discipline Skills
 
@@ -24,38 +27,16 @@ A Claude Code plugin bundling twenty skills and a macOS Shortcuts MCP server for
 | **systematic-debugging** | Bugs, test failures, unexpected behavior | Find root cause before proposing fixes. Investigation-first approach. |
 | **worktree** | Starting new branches, parallel sessions | Create isolated git worktrees for concurrent Claude Code sessions. |
 
-### Swift/iOS Skills
+### Agents
 
-| Skill | Trigger | What it does |
-|-------|---------|--------------|
-| **swift-dev** | Swift, SwiftUI, iOS development | Hub skill — routes to specialist skills for deep guidance. |
-| **swift-concurrency** | async/await, actors, Sendable, Swift 6 migration | Expert guidance on Swift Concurrency patterns and safety. |
-| **swiftui-expert-skill** | Building or reviewing SwiftUI views | State management, view composition, performance, Liquid Glass adoption. |
-| **swift-conventions** | Generating or reviewing Swift code | Quick-reference coding standards for Swift 6.2, SwiftUI, SwiftData, Foundation Models. |
-| **axiom-accessibility-diag** | VoiceOver issues, Dynamic Type, color contrast | Accessibility diagnostics with WCAG compliance for iOS/macOS. |
-| **foundation-models-ref** | On-device AI, @Generable, LanguageModelSession | Complete Foundation Models framework reference (iOS 26+). |
-| **foundation-models** | Foundation Models discipline | Anti-patterns, decision trees, and pressure scenarios. |
-| **foundation-models-diag** | Foundation Models diagnostics | Error triage, Instruments profiling, production crisis defense. |
-| **axiom-swift-testing** | Writing unit tests, Swift Testing framework | @Test/@Suite macros, #expect/#require, parameterized tests, fast test setup. |
-| **axiom-swiftdata** | @Model, @Query, ModelContext, CloudKit | SwiftData persistence patterns and iOS 26+ features. |
-| **axiom-swiftui-26-ref** | iOS 26 SwiftUI features | Liquid Glass, @Animatable, WebView, rich text editing, 3D spatial layout. |
-| **axiom-swiftui-debugging** | View not updating, preview crashes, layout issues | Diagnostic decision trees for SwiftUI debugging. |
-
-### MCP Server
-
-[**shortcuts-mcp**](https://github.com/foxtrottwist/shortcuts-mcp) — Run, view, and manage macOS Shortcuts from Claude Code. Provides tools for executing shortcuts, browsing your library, and tracking usage patterns.
+| Agent | Role |
+|-------|------|
+| **researcher** | Deep information gathering and synthesis |
+| **verifier** | Adversarial review of completed work against acceptance criteria |
+| **orchestrator** | Task decomposition and planning for multi-step work |
+| **editor** | Review written content against quality standards |
 
 ## Install
-
-The plugin installs across all three Claude platforms from a single marketplace:
-
-| Platform | Where to install | Runtime support |
-|----------|-----------------|-----------------|
-| **Claude Code** | `/plugin` command or CLI | Full — skills, agents, MCP, hooks |
-| **Cowork** | Plugins sidebar → Marketplace | Full — skills, agents, connectors |
-| **Claude AI** | Customize sidebar → Marketplace | Skills load; agent/MCP/hook support may vary |
-
-### Claude Code
 
 ```
 /plugin marketplace add Foxtrottwist/workflow-tools
@@ -69,23 +50,7 @@ claude plugin marketplace add Foxtrottwist/workflow-tools
 claude plugin install workflow-tools@workflow-tools
 ```
 
-### Cowork & Claude AI
-
-Browse the marketplace from the sidebar and install directly. The same plugin package is used across all platforms.
-
 ## Development
-
-Skills are edited directly in this repo — it is the canonical source. The MCP server source lives in `mcp-servers/shortcuts-mcp` in the [workflow-systems](https://github.com/Foxtrottwist/workflow-systems) monorepo and is built into this repo via `sync.sh`.
-
-### Updating MCP artifacts
-
-From the workflow-systems monorepo:
-
-```bash
-cd plugins/workflow-tools
-./sync.sh    # rebuilds MCP server artifacts
-./build.sh   # validates plugin structure
-```
 
 ### Local testing
 
@@ -93,46 +58,43 @@ cd plugins/workflow-tools
 claude --plugin-dir .
 ```
 
-Running `/doctor` during local development will show a warning about `CLAUDE_PLUGIN_ROOT` being missing. This is expected — Claude Code sets that variable automatically at install time. The warning does not appear for end users after installation via the marketplace.
+Running `/doctor` during local development will show a warning about `CLAUDE_PLUGIN_ROOT` being missing. This is expected — Claude Code sets that variable automatically at install time.
 
 ### Structure
 
 ```
 workflow-tools/
 ├── .claude-plugin/
-│   ├── marketplace.json     # Marketplace catalog
-│   └── plugin.json          # Plugin metadata
-├── .mcp.json                # MCP server configuration
+│   ├── marketplace.json
+│   └── plugin.json
+├── .mcp.json
 ├── skills/
 │   ├── iter/
 │   ├── writing/
-│   ├── instruct-dev/
+│   ├── instruction-dev/
 │   ├── sharpen/
+│   ├── dispatch/
 │   ├── chat-migration/
 │   ├── code-audit/
 │   ├── azure-devops/
 │   ├── tdd/
 │   ├── systematic-debugging/
 │   ├── worktree/
-│   ├── swift-dev/
-│   ├── swift-concurrency/
-│   ├── swiftui-expert-skill/
-│   ├── swift-conventions/
-│   ├── axiom-accessibility-diag/
-│   ├── foundation-models-ref/
-│   ├── foundation-models/
-│   ├── foundation-models-diag/
-│   ├── axiom-swift-testing/
-│   ├── axiom-swiftdata/
-│   ├── axiom-swiftui-26-ref/
-│   └── axiom-swiftui-debugging/
-├── mcp-servers/
-│   └── shortcuts-mcp/
-│       ├── dist/            # Compiled server
-│       ├── node_modules/    # Production deps
-│       └── package.json
-├── sync.sh                  # Build MCP artifacts
-├── build.sh                 # Validate structure
+│   ├── scaffold/
+│   └── cws/
+├── agents/
+│   ├── researcher.md
+│   ├── verifier.md
+│   ├── orchestrator.md
+│   └── editor.md
+├── hooks/
+│   ├── hooks.json
+│   ├── verification-nudge.sh
+│   ├── claude-md-bloat-guard.sh
+│   └── skill-quality-guard.sh
+├── scripts/
+├── build.sh
+├── package.sh
 └── LICENSE
 ```
 
