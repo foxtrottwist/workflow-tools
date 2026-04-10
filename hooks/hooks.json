@@ -4,7 +4,7 @@
       {
         "matcher": "clear",
         "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/scripts/context-preservation-check.sh" }]
-      },
+      }
     ],
     "PreToolUse": [
       {
