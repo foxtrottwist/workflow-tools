@@ -56,6 +56,8 @@ Task tool call:
 
     Before writing any code, review the codebase you're working in — read existing files, understand patterns and conventions already in use.
 
+    If the task or its spec lists references (documentation, guides, file paths, URLs), read every one of them before planning or acting. Do not substitute built-in knowledge for a cited source — when the spec points to a reference, the reference is authoritative.
+
     Review the available skills listed in your system reminders. If any skill is relevant to this task (by name alone you can tell — e.g., swiftui-pro for SwiftUI, swift-concurrency-pro for concurrency, systematic-debugging for bugs), invoke it. Skills provide domain-specific workflows and constraints you won't have otherwise.
 
     Read .claude/guardrails.md for accumulated lessons before starting.
@@ -77,6 +79,8 @@ Task tool call:
     Criteria: {acceptance criteria}
     Output: {output_path}
     Before starting, review the codebase or existing material relevant to this phase.
+
+    If the phase or its spec lists references (documentation, guides, file paths, URLs), read every one of them before planning or acting. Do not substitute built-in knowledge for a cited source — when the spec points to a reference, the reference is authoritative.
 
     Review the available skills listed in your system reminders. If any skill is relevant to this phase (by name alone you can tell — e.g., writing for composition, prompt-dev for templates), invoke it. Skills provide domain-specific workflows and constraints you won't have otherwise.
 

@@ -197,9 +197,16 @@ Generate after interview and write to the plan file (specified by plan mode syst
 ## Constraints
 {From question 3}
 
+## References
+{Carry forward verbatim from the source spec's References section, if present. Each entry must be a specific file path, URL, or doc anchor — never a vague gesture. If no spec was provided, omit this section unless references came up during the interview.}
+
 ## Approach / Notes
 {From remaining questions, open questions}
 
 ## Tasks / Phases
-{Decomposed work units — see development.md or knowledge.md}
+{Decomposed work units — see development.md or knowledge.md. Each task with relevant references should list them in a `References:` field so the dispatch prompt can include them.}
 ```
+
+### Carrying References from the Spec
+
+When iter is invoked with a sharpen spec (or any input that cites documentation), preserve the **References** section verbatim in the plan file, and propagate the relevant entries down to each task/phase that touches the referenced material. Do not summarize, rewrite, or drop references — the downstream dispatch prompts depend on them being specific and verbatim.
