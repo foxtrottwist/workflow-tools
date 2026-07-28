@@ -1,5 +1,20 @@
 # CLAUDE.md Authoring Guide
 
+## Three Memory Mechanisms
+
+CLAUDE.md is one of three places project knowledge can live. Route each new fact to the one it actually belongs in — putting it in all three is the repetition failure mode.
+
+| | CLAUDE.md | Auto memory | `.claude/rules/` |
+|---|---|---|---|
+| **Who writes it** | You (or the user) | Claude, automatically | You |
+| **Loads** | Every session, in full | First 200 lines/25KB of `MEMORY.md`, every session | Every session (unconditional) or only when matching files are opened (`paths:` frontmatter) |
+| **Shared how** | Git, with the team | Machine-local, not committed | Git, with the team |
+| **Use for** | Facts every session needs: build/test commands, hard constraints, standing corrections | Learnings Claude discovers itself — build quirks, debugging insights — that don't need a human to curate them | Instructions that only matter for one part of the codebase, or a multi-step procedure tied to specific files |
+
+If a correction only matters when touching `hooks/**` or `src/api/**`, it doesn't belong in root CLAUDE.md at all — it belongs in a path-scoped rule, so it only enters context when relevant instead of costing tokens every session. See [rules-guide.md](rules-guide.md).
+
+If a correction is something Claude would plausibly rediscover and note on its own (a build quirk, a flaky test pattern), let auto memory hold it rather than hand-writing it into CLAUDE.md. Reserve CLAUDE.md for what a new teammate — human or agent — needs unconditionally.
+
 ## Template
 
 An effective CLAUDE.md contains these sections — and nothing else:
@@ -64,15 +79,16 @@ No architecture overview, no explanation of what the app does, no dictation life
 | 5 | Does this restate general language/framework knowledge? | Remove it | P5 |
 | 6 | Is there a build/test/lint command? | If missing, add one — highest-value content | P4 |
 | 7 | Does each correction trace to a specific observed failure? | If not, it's speculative — question it | P2 |
-| 8 | Is the file growing beyond ~50 lines? | Audit aggressively — every line costs 14–22% more reasoning tokens | Cost |
+| 8 | Is the file growing beyond ~50 lines? | Audit aggressively — every line costs 14–22% more reasoning tokens. Check whether any content is actually path-scoped and belongs in `.claude/rules/` instead | Cost |
 
 ## Adding a Correction
 
 1. **Identify the failure.** What did the agent do wrong? Be specific: "Claude used `foregroundColor()` instead of `foregroundStyle()`."
-2. **Write the imperative.** One line: `Use foregroundStyle(), not foregroundColor().`
-3. **Place it correctly.** Agent mistakes → `## Corrections`. Environment/framework traps → `## Gotchas`.
-4. **Verify it's not discoverable.** If the codebase consistently uses the correct pattern and Claude could infer it from existing code, the correction may not be needed. Add only if the failure recurred.
-5. **Commit.** The correction is shared across sessions via git.
+2. **Choose the mechanism.** Does every session need this, regardless of what's being touched? → CLAUDE.md. Does it only apply to a specific path or file type? → a path-scoped rule instead (see [rules-guide.md](rules-guide.md)). Is it something Claude could plausibly notice and note on its own next time? → let auto memory hold it; don't hand-write it.
+3. **Write the imperative.** One line: `Use foregroundStyle(), not foregroundColor().`
+4. **Place it correctly.** Agent mistakes → `## Corrections`. Environment/framework traps → `## Gotchas`.
+5. **Verify it's not discoverable.** If the codebase consistently uses the correct pattern and Claude could infer it from existing code, the correction may not be needed. Add only if the failure recurred.
+6. **Commit.** The correction is shared across sessions via git.
 
 ## Periodic Audit
 

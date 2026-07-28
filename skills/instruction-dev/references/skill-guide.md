@@ -1,5 +1,9 @@
 # Skill Authoring Guide
 
+## Examples Belong in the Skill, Not the Interface
+
+Anthropic's "examples to interface design" guidance is about tool and API interfaces — an MCP tool or CLI whose shape makes correct use obvious doesn't need a prompt full of usage examples to compensate. That's a different layer than skill authoring. Inside a skill body, a worked example is still required (P3, checklist #7) — the shift doesn't license cutting it. If a skill wraps a tool, spend the effort on the tool's interface first; keep the skill's worked example either way.
+
 ## The Shortcut Anti-Pattern
 
 Rich output templates give Claude enough scaffolding to respond without following the full workflow. Templates become shortcuts that bypass the procedure (P3).

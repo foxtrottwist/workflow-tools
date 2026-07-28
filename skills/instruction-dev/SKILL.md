@@ -25,6 +25,7 @@ Infer the artifact type from the request context — do not ask:
 | "CLAUDE.md", "project instructions", "corrections" | **claude-md** |
 | "skill", "SKILL.md", "slash command", "workflow" | **skill** |
 | "agent", "agent definition", "subagent" | **agent** |
+| ".claude/rules/", "path-scoped rule", "only load for these files" | **rule** |
 
 If genuinely ambiguous, ask once with these four options.
 
@@ -42,6 +43,7 @@ Surface the 2–3 optimization guide principles most relevant to this artifact t
 - **CLAUDE.md:** P1 (prescribe don't describe), P2 (reactive not proactive)
 - **Agents:** P1 (prescribe), P6 (context protection)
 - **Prompt templates:** P3 (no fill-in-the-blank scaffolding), P4 (verification mechanism)
+- **Rules:** P1 (prescribe don't describe), path-scoping to avoid unconditional context cost
 
 Consult `references/optimization/agent-optimization-guide.md` for principle details and examples.
 
@@ -70,6 +72,7 @@ Route to artifact-specific guidance:
 | claude-md | [claude-md-guide.md](references/claude-md-guide.md) | Draft using Build/Test → Constraints → Corrections → Gotchas structure |
 | skill | [skill-guide.md](references/skill-guide.md) | Hand off to `skill-creator` for scaffolding, then draft SKILL.md body |
 | agent | [agent-guide.md](references/agent-guide.md) | Draft using Operating Principles → Output → Constraints structure |
+| rule | [rules-guide.md](references/rules-guide.md) | Draft with `paths` frontmatter scoping it to the relevant files |
 
 All artifact types: load [principles.md](references/principles.md) for cross-cutting guidance. Use `references/optimization/agent-optimization-guide.md` as the primary quality standard throughout.
 
@@ -86,6 +89,7 @@ Apply the artifact-specific review checklist from the relevant reference file:
 - claude-md: 8-item checklist in [claude-md-guide.md](references/claude-md-guide.md)
 - skill: 10-item checklist in [skill-guide.md](references/skill-guide.md)
 - agent: 4-item checklist in [agent-guide.md](references/agent-guide.md)
+- rule: 6-item checklist in [rules-guide.md](references/rules-guide.md)
 
 For prompt templates, also run `scripts/validate-template.sh <path>` if available.
 

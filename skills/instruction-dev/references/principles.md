@@ -39,6 +39,15 @@ Use agents for complex subtasks. Each agent gets only the context it needs. Resu
 
 Do not use `claude init` or automated tools to generate CLAUDE.md content. LLM-generated context files: -0.5% to -2% resolve rate (ETH Zurich). Self-generated skills: -1.3pp average (SkillsBench).
 
+## P9: Judgement Over Rules
+
+For content that isn't discoverable and does need to be said, prefer a judgement call tied to context over a blanket rule. Claude 5-generation models infer correct behavior from surrounding context; enumerated rules force extra reasoning cycles to reconcile conflicts and stop transferring once the situation shifts slightly.
+
+- Bad: `Never write multi-paragraph docstrings.`
+- Good: `Write code that reads like the surrounding code: match its comment density, naming, and idiom.`
+
+P1 asks whether the content belongs at all. P9 asks, for what remains, whether it's phrased as an inferable judgement or an absolute rule.
+
 ## P8: Separate Routing from Execution
 
 Skill descriptions are always loaded in context, even when the body is not. The description routes (when to invoke); the body executes (how to act).
