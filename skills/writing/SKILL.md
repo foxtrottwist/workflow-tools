@@ -5,7 +5,7 @@ description: "Use when composing emails, texts, notes, or professional content. 
 
 # Writing
 
-Written communication following quality standards. Three paths based on task complexity.
+Written communication following quality standards. Three paths based on task complexity. Defaults to proofreading the user's own words rather than originating a message from scratch — see the Compose Gate for when full drafting is appropriate.
 
 ## Resume Check
 
@@ -27,6 +27,18 @@ Infer tone from relationship context (professional, colleague, casual). Use **As
 ## Path: Compose Message
 
 See [references/templates.md](references/templates.md) for input structure.
+
+### Compose Gate
+
+Default to proofreading, not ghostwriting. Compose a message from scratch only when at least one holds:
+
+- **Explicit request for full drafting** — the request itself contains what to say ("tell him the meeting moved to 3pm and ask if that still works"), or the user directly asks to be handed the words despite the topic's weight ("just write it, I trust you"). Naming a topic ("write an email about the delay") is not the same as supplying the content.
+- **Low stakes** — routine, low-consequence message where an imperfect first pass costs nothing.
+- **Mechanical / informational** — a factual or logistical reply: confirming receipt, answering a routine question, relaying a status, sharing a link.
+- **Functional etiquette** — brief social-function messages: thanks, acknowledgment, congratulations, RSVP, "got it."
+- **Shape already provided** — the user supplied bullet points, a rough draft, or dictated content to structure and polish.
+
+**If none apply:** the message is substantive — a disagreement, a negotiation, feedback, an apology, a case being made — and the user hasn't supplied the actual content, only the topic. Don't invent it. Ask for their rough points or a first attempt, then apply the framework and tone rules below to what they give you. The substance stays theirs; composing from nothing is not proofreading.
 
 ### Channel Detection
 
@@ -146,17 +158,15 @@ When user requests to save copy for reuse ("save this", "remember this phrase", 
 3. Add the snippet under that category
 4. Confirm what was saved and where
 
-**Trigger phrases:**
-- "Save this for later"
-- "Remember this response"
-- "Add to my snippets"
-- "Store this phrase"
+**Trigger phrases:** "Save this for later", "Remember this response", "Add to my snippets", "Store this phrase".
 
 ## Worked Example
 
 **Request:** "Write a Teams message to my manager letting her know the API migration is done, but flag that we're now dependent on the new rate limits."
 
 **Discover:** Path = Compose Message (message request). Channel = Teams ("Teams message" stated explicitly) → compressed structure. Tone = professional/colleague, inferred from "manager."
+
+**Compose Gate check:** Mechanical/informational — a status update relaying a completed fact and a follow-on risk, not a negotiation or disagreement. Gate passes; compose freely.
 
 **Team/Peer path:** Apply Purpose/Content/Wrapup from communication-framework.md, compressed for Teams length. Purpose: status update. Content: migration complete, new dependency on rate limits. Wrapup: offer to discuss if needed.
 
@@ -170,17 +180,19 @@ whether we need a caching layer, or wait and see?
 
 Plain text, no markdown, no bullets — copy-pastes cleanly into Teams. No conversation state was created since this is a one-off status update, not an ongoing thread.
 
-## References
+### When the Gate Fails
 
-- **Communication framework**: [references/communication-framework.md](references/communication-framework.md) — Purpose/Content/Wrapup structure, context threading, tone rules
-- **Writing standards**: [references/standards.md](references/standards.md) — Voice requirements, prohibited terms, success criteria
-- **Templates**: [references/templates.md](references/templates.md) — Input/output patterns for each task type
-- **Snippets**: [references/snippets.md](references/snippets.md) — Reusable boilerplate, openers, closers, common phrases
+**Request:** "Write an email to my manager explaining why I think we should push back the launch date — QA flagged blocking issues but leadership wants to ship on schedule."
+
+**Compose Gate check:** Substantive — a disagreement with leadership carrying real stakes. The user named the topic and their general position, not their actual argument: which issues, how severe, what they want to happen if leadership says no anyway. No shape provided, not mechanical, not etiquette, no explicit instruction to fully originate it. Gate fails.
+
+**Response:** Don't build the argument. Ask: "What's your case — which specific blocking issues, and how bad is the risk if you ship anyway? Give me your rough points or a first pass and I'll help you sharpen it." Once the user supplies their reasoning, apply the communication framework and tone rules to structure and tighten it — the substance stays theirs.
 
 ## Quick Reference
 
 | Task | Path | Output |
 |------|------|--------|
-| Email, text, note | Compose (single-shot) | Ready-to-send message |
+| Email, text, note — gate passes | Compose (single-shot) | Ready-to-send message |
+| Email, text, note — gate fails | Ask for the user's points, then Compose from those | Ready-to-send message |
 | Fix errors | Proofread (single-shot) | Corrected text only |
 | LinkedIn, cover letter | Create (iterative) | Polished content |

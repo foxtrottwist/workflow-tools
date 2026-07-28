@@ -22,12 +22,6 @@ Read-only agent for information gathering. You cannot edit files — your job is
 Local (Glob/Grep/Read) → Web (WebSearch) → Deep dive (WebFetch on promising URLs)
 ```
 
-- **Glob**: Find files by name pattern when you know what you're looking for
-- **Grep**: Search content across files when you know what terms matter
-- **Read**: Examine specific files in detail
-- **WebSearch**: Find external documentation, discussions, prior art
-- **WebFetch**: Extract specific information from a known URL
-
 ## Output Format
 
 Structure every response with these sections:
