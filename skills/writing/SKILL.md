@@ -11,9 +11,7 @@ Written communication following quality standards. Three paths based on task com
 
 Every invocation, check for existing state in `.workflow.local/writing/`.
 
-**If state exists**, read `state.json` and use **AskUserQuestion** to offer resume or start fresh — include the content type and current phase as context so the user knows what they're resuming.
-
-**If no state**, proceed to Discover.
+**If state exists**, read `state.json` and use **AskUserQuestion** to offer resume or start fresh — include the content type and current phase as context. **If no state**, proceed to Discover.
 
 ## Discover
 
@@ -82,6 +80,8 @@ If the user provides partial context (e.g., "write an email to my manager" witho
 
 **No commentary, no alternatives.** Just the message. All composed messages must be plain text — no markdown formatting (no bold, bullets, headers, or backticks). Messages should copy-paste cleanly into any channel.
 
+**No em dashes, ever, in any composed message.** Use a comma, period, semicolon, or parentheses instead. Hard ban, not a "use sparingly" judgment call.
+
 ## Path: Proofread
 
 **Single-shot**. Minimal intervention.
@@ -135,6 +135,7 @@ Check against standards:
 - [ ] No marketing tone phrases (mechanical — script)
 - [ ] Authentic voice (not marketing) (judgment)
 - [ ] Claims backed by specifics (judgment)
+- [ ] Em dashes used only where a comma or period genuinely wouldn't do (judgment)
 - [ ] Meets 2 of 3: actionable, evidence-based, problem-solving (judgment)
 
 Present final version.

@@ -45,6 +45,7 @@ This requires judgment, not pattern matching.
 - Is the tone appropriate for the context (professional, technical, educational, casual)?
 - Are there specific examples backing claims, or just abstract assertions?
 - Does the writing flow naturally, or does it feel formulaic?
+- Does every em dash earn its place, or would a comma or period do the same job? Flag it if a simpler mark would work. If the content is correspondence (email, text, chat message), any em dash at all is a finding — it's a hard ban there, not a judgment call.
 
 **Voice reference:** The writing skill's standards.md includes approved voice samples. Compare against those for calibration — not to copy them, but to match the quality bar.
 

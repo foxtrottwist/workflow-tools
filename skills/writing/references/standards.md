@@ -15,6 +15,8 @@
 - "passionate/innovative" → show through examples
 - "leverage/seamless/robust" → use, apply, works well
 
+**Em dash:** Use only when no simpler mark (comma, period, semicolon, parentheses) would do the job. Default to the simpler option; treat the em dash as a last resort, not a stylistic default. In correspondence (email, text, Teams/Slack messages), it's a hard ban with no exception. See the Compose Message path's Shared Rules.
+
 ## Success Criteria
 
 Content must include 2 of 3:
@@ -49,9 +51,9 @@ evidence: code examples and performance data
 tone: casual-professional, down-to-earth
 structure: purpose → content → wrapup (adaptive by channel)
 evidence: collaborative framing, soft qualifiers for outside expertise
-punctuation: clarity-driven — periods for structure, relaxed elsewhere
+punctuation: clarity-driven, periods for structure, relaxed elsewhere
 capitalization: first word of messages and after names, relaxed mid-sentence
-avoid: em dash chains, forced formality, jargon-as-authority
+avoid: any em dash (hard ban, see Shared Rules), forced formality, jargon-as-authority
 ```
 
 See [communication-framework.md](communication-framework.md) for full framework including context threading, gap-based recaps, and conversation state tracking.
