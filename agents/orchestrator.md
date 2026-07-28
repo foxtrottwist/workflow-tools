@@ -22,39 +22,13 @@ DISCOVER → DECOMPOSE → VALIDATE → DELIVER PLAN
 Before decomposing, understand the problem space:
 
 - **Read the codebase.** Glob for relevant files, Read key modules. Understand existing patterns, conventions, and architecture before proposing changes.
-- **Check existing state.** Look for `.workflow.local/` artifacts, `guardrails.md`, prior plans that might inform this work.
+- **Check existing state.** Look for `.workflow.local/` artifacts and prior plans that might inform this work.
 - **Identify constraints.** Framework versions, existing patterns, test infrastructure, CI requirements.
 - **Ask clarifying questions** only for genuine ambiguity — infer mode and scope from request context when possible.
 
 ### 2. Decompose
 
-Break work into atomic tasks using iter's T{N} format:
-
-```markdown
-# {Feature/Goal} - Tasks
-
-**Total:** {N} tasks
-
-## Dependencies
-
-```
-T1 ──► T3 ──► T5
-T2 ────┘
-T4 (independent)
-```
-
-## Tasks
-
-- [ ] **T1**: {title}
-  - Files: `path/to/file.ts`
-  - Criteria:
-    - {measurable acceptance criterion}
-    - {another criterion}
-  - Depends: none
-  - Model: sonnet
-  - Max turns: 5
-  - Skill: {skill name if applicable}
-```
+Break work into atomic tasks using iter's T{N} format — file, criteria, dependencies, weight, dispatch mode, model, and skill mapping. Don't restate the format here; see [development.md](../skills/iter/references/development.md) in the iter skill for the exact fields, weight tiers, and dispatch rules. Restating it separately is how this file and iter's drift out of sync.
 
 **Decomposition rules:**
 - Each task targets 1-3 files. If it touches more, split it.
@@ -76,20 +50,7 @@ Before delivering, check your own work:
 
 Output the complete plan in iter's format, ready for dispatch.
 
-## Model Selection (Advisory)
-
-| Task Type | Model | Rationale |
-|-----------|-------|-----------|
-| File search, grep, glob | haiku | Pattern matching |
-| Simple file edits (<50 lines) | haiku | Mechanical changes |
-| Standard implementation | sonnet | Balanced capability |
-| Code review, verification | sonnet | Standards checking |
-| Test generation | sonnet | Structured output |
-| Complex debugging | opus | Root cause analysis |
-| Architecture decisions | opus | Multi-factor reasoning |
-| Refactors touching many files | opus | Coordination complexity |
-
-**Default:** sonnet
+Model selection follows the same advisory table as [development.md](../skills/iter/references/development.md) — sonnet by default, haiku for mechanical work, opus for architecture and complex debugging. Good vs. bad task examples live there too: single-file focus, measurable acceptance criteria, right model for the work.
 
 ## Skill Cross-Referencing
 
@@ -103,38 +64,6 @@ When decomposing, check available skills in the system reminders. If a task alig
 ```
 
 Mapped skills provide domain workflows and constraints that general prompts lack. Always prefer skill-backed tasks over raw prompts.
-
-## Good vs Bad Tasks
-
-### Good
-
-```markdown
-- [ ] **T1**: Create User data model
-  - Files: `src/models/User.swift`
-  - Criteria:
-    - Model with id (UUID), email (String), createdAt (Date)
-    - SwiftData @Model annotation
-    - @Attribute(.unique) on email
-  - Depends: none
-  - Model: sonnet
-  - Max turns: 5
-  - Skill: tdd
-```
-
-Clear title, single file, measurable criteria, right model.
-
-### Bad
-
-```markdown
-- [ ] **T1**: Implement authentication
-  - Files: multiple
-  - Criteria: users can log in
-  - Depends: none
-  - Model: haiku
-  - Max turns: 3
-```
-
-Too broad, vague files, unmeasurable criteria, wrong model, too few turns.
 
 ## Not Changing Section
 

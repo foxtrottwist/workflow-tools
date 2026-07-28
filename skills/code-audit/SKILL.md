@@ -7,15 +7,6 @@ description: "Use when documentation may be out of sync with code. Triggers on \
 
 Verify documentation accuracy against code using parallel subagents with state persistence and verification gates.
 
-## Core Pattern
-
-```
-State persists across sessions.
-Parallel subagents review partitions.
-Verification gates catch false positives.
-Guardrails accumulate lessons.
-```
-
 ## Workflow
 
 ```
@@ -150,25 +141,10 @@ Options:
 ├── brief.md         # Audit scope and requirements
 ├── partitions.md    # Review units
 ├── findings.md      # Aggregated, verified findings
-├── progress.md      # Session log
-└── guardrails.md    # Codebase-specific lessons
+└── progress.md      # Session log
 ```
 
-## Guardrails
-
-Read before each session. Append when discovering patterns:
-
-```markdown
-## {Pattern Name}
-- **Context:** {when this applies}
-- **Lesson:** {what to watch for or ignore}
-- **Source:** {which audit session}
-```
-
-Examples:
-- "This codebase uses `// MARK:` for section headers - not stale comments"
-- "Generated files in `src/gen/` - skip documentation checks"
-- "Team convention: minimal README, detailed doc comments"
+Codebase-specific lessons ("this project uses `// MARK:` for section headers, not stale comments") belong in Claude Code's auto memory, not a hand-maintained guardrails file — they're exactly the kind of per-project learning it captures automatically across sessions.
 
 ## Progress Tracking
 
@@ -183,19 +159,37 @@ Append after each session:
 
 Enables resume and provides audit history.
 
+## Worked Example
+
+**Request:** "Audit the docs in src/auth for drift."
+
+**Phase 0 (Resume):** No existing state for this project — proceed to Scope.
+
+**Phase 1 (Scope):** "docs in src/auth" → module audit, documentation accuracy focus. Write `brief.md`.
+
+**Phase 2 (Partition):** Feature-based — entry point `src/auth/index.ts`, trace dependencies. Partitions: core (`src/auth/`), consumers (`src/api/middleware/`, `src/routes/`).
+
+**Phase 3 (Review):** Two subagents dispatched in parallel, one per partition, using `references/subagent-prompts.md`. Core-partition agent finds: `src/auth/session.ts`'s docstring says "tokens expire after 1 hour" but the code sets a 24-hour expiry. Consumer-partition agent finds no discrepancies. `scripts/aggregate-findings.py` merges both into `findings.md`.
+
+**Phase 4 (Verify):** Gate 1 confirms the finding isn't a duplicate and severity (warning, not critical — stale comment, not a functional bug) is reasonable. Gate 2 spot-checks `session.ts` directly and confirms the docstring is indeed wrong.
+
+**Phase 5 (Propose):**
+```
+## Audit Summary: src/auth
+
+**Reviewed:** 2 partitions
+**Findings:** 0 critical, 1 warning, 0 info
+
+### Warnings
+- src/auth/session.ts:14 — docstring claims 1-hour expiry, code sets 24 hours
+
+Options:
+1. Address all warnings
+2. Export findings and close
+```
+
+User selects option 1 — agent gets explicit approval, then fixes the docstring.
+
 ## Documentation Philosophy
 
-See [references/doc-philosophy.md](references/doc-philosophy.md):
-- Code is source of truth
-- Documentation should direct, not describe
-- Less documentation = less maintenance burden
-- Stale docs are worse than no docs
-
-## Quick Reference
-
-| Audit Type | Partitions | Depth | Output |
-|------------|------------|-------|--------|
-| Full review | All directories | Deep | Complete findings |
-| Quick sync | All directories | Shallow | Status + blockers |
-| Module audit | Single partition | Deep | Focused findings |
-| Feature exploration | Traced dependencies | Medium | Feature map |
+See [references/doc-philosophy.md](references/doc-philosophy.md) — code is source of truth, documentation should direct rather than describe, and stale docs are worse than no docs.

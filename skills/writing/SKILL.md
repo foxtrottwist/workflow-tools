@@ -134,8 +134,7 @@ Present final version.
 ├── state.json      # Current phase
 ├── brief.md        # Requirements
 ├── draft.md        # Current version
-├── feedback.md     # Revision history
-└── guardrails.md   # Lessons learned
+└── feedback.md     # Revision history
 ```
 
 ## Saving Snippets
@@ -153,16 +152,23 @@ When user requests to save copy for reuse ("save this", "remember this phrase", 
 - "Add to my snippets"
 - "Store this phrase"
 
-## Guardrails
+## Worked Example
 
-Append discoveries to `guardrails.md`:
+**Request:** "Write a Teams message to my manager letting her know the API migration is done, but flag that we're now dependent on the new rate limits."
 
-```markdown
-## {Pattern}
-- **Context:** {when this applies}
-- **Problem:** {what went wrong}
-- **Fix:** {how to avoid}
+**Discover:** Path = Compose Message (message request). Channel = Teams ("Teams message" stated explicitly) → compressed structure. Tone = professional/colleague, inferred from "manager."
+
+**Team/Peer path:** Apply Purpose/Content/Wrapup from communication-framework.md, compressed for Teams length. Purpose: status update. Content: migration complete, new dependency on rate limits. Wrapup: offer to discuss if needed.
+
+**Output (ready-to-send only, no commentary):**
 ```
+API migration to v2 is complete and deployed. One thing to flag: we're now
+subject to the new provider's rate limits (1000 req/min vs. unlimited
+before), so if traffic spikes we could see throttling. Want to sync on
+whether we need a caching layer, or wait and see?
+```
+
+Plain text, no markdown, no bullets — copy-pastes cleanly into Teams. No conversation state was created since this is a one-off status update, not an ongoing thread.
 
 ## References
 

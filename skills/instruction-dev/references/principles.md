@@ -2,7 +2,7 @@
 
 Eight principles drawn from academic research (ETH Zurich, SkillsBench) and practitioner experience (Boris Cherny). These apply across all artifact types — prompt templates, CLAUDE.md, skills, and agent definitions.
 
-Reference principles by number (P1–P8) in reviews and guardrails.
+Reference principles by number (P1–P9) in reviews and guardrails.
 
 ---
 

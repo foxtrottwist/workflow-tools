@@ -5,7 +5,7 @@ description: "Use when building features, implementing tasks, researching topics
 
 # Iterative
 
-Task orchestration layered on Claude Code's native Task system. This skill adds verification gates, domain-specific decomposition templates, and guardrails accumulation. The native Task tool handles fresh-context subagents, state persistence, and session resumption.
+Task orchestration layered on Claude Code's native Task system. This skill adds verification gates and domain-specific decomposition templates. The native Task tool handles fresh-context subagents, state persistence, and session resumption.
 
 ## Mode Detection
 
@@ -60,7 +60,6 @@ Task tool call:
 
     Review the available skills listed in your system reminders. If any skill is relevant to this task (by name alone you can tell — e.g., swiftui-pro for SwiftUI, swift-concurrency-pro for concurrency, systematic-debugging for bugs), invoke it. Skills provide domain-specific workflows and constraints you won't have otherwise.
 
-    Read .claude/guardrails.md for accumulated lessons before starting.
     Invoke the tdd skill — write failing tests before production code (RED-GREEN-REFACTOR).
 
     Work toward the criteria. Commit in logical units — at minimum one commit per task, more if the task has natural boundaries.
@@ -83,8 +82,6 @@ Task tool call:
     If the phase or its spec lists references (documentation, guides, file paths, URLs), read every one of them before planning or acting. Do not substitute built-in knowledge for a cited source — when the spec points to a reference, the reference is authoritative.
 
     Review the available skills listed in your system reminders. If any skill is relevant to this phase (by name alone you can tell — e.g., writing for composition, prompt-dev for templates), invoke it. Skills provide domain-specific workflows and constraints you won't have otherwise.
-
-    Read .claude/guardrails.md for accumulated lessons before starting.
 
     Work toward the criteria. Save output to the specified path.
     If ALL criteria met, state "DONE" with summary.
@@ -150,29 +147,27 @@ After all units complete and pass verification:
 2. Present summary with outputs/files list
 3. Clean up any temporary state
 
-## Guardrails
-
-Project-level lessons accumulate in `.claude/guardrails.md`. Every subagent reads this file before starting and appends when problems are discovered.
-
-```markdown
-## {Pattern Name}
-- **When**: {context when this applies}
-- **Do**: {what to do instead}
-- **Learned**: {task/phase} - {brief reason}
-```
-
-Guardrails persist across sessions. Past lessons prevent repeated mistakes.
-
-## Before Stopping
-
-Before ending a session, check if `.claude/guardrails.md` exists. If it does, review accumulated lessons to ensure no patterns were missed.
-
 ## Anti-Patterns
 
 - **Skipping verification**: Always run confirmation pass + verification agent
 - **Giant units**: Scope tasks/phases to be completable in a few turns
-- **Ignoring guardrails**: Read `.claude/guardrails.md` before every dispatch
 - **Wrong model**: Use the model selection table, don't default everything to opus
+
+## Worked Example
+
+**Request:** "Implement rate limiting on the `/api/login` endpoint."
+
+**Mode detection:** "implement" + code file reference → development.
+
+**Plan mode:** Discovery confirms scope (login endpoint only, not all API routes) and the limit (5 attempts / 15 min, per existing product doc). Decompose into:
+- **T1**: Add rate-limit middleware — `src/middleware/rateLimit.ts` — Depends: none — Weight: standard — Dispatch: subagent — Model: sonnet — Skill: tdd
+- **T2**: Wire middleware into login route — `src/routes/auth.ts` — Depends: T1 — Weight: light — Dispatch: inline — Model: sonnet
+
+**Dispatch:** T1 goes out as a Task tool call with the standard prompt (files, criteria, `Skill: tdd`, review-existing-patterns instruction). T2 is small and depends on T1's output, so it runs inline instead of as a separate subagent — the orchestrator applies the middleware directly once T1's interface is known.
+
+**Verify:** After T1 declares DONE, run the programmatic gate (`tsc --noEmit`, `vitest run`), then a confirmation pass (same prompt, fresh Task — finds nothing to redo), then the adversarial verification agent (checks: does the middleware actually reject the 6th attempt, or just log it?). Both gates pass → T1 marked complete, T2 proceeds.
+
+**Deliver:** Summary lists both files touched, confirms the endpoint now returns 429 after 5 attempts, notes the rate-limit window is in-memory (not distributed) as a call-out for production deployment.
 
 ## Reference Files
 

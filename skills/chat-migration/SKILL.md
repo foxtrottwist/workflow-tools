@@ -11,35 +11,60 @@ Generate context transfer documents for conversation continuation.
 
 Analyze the current conversation and produce a handoff document. No user questions needed—scan the full context and extract what matters.
 
-## Output Structure
+## Required Sections
 
-Generate a markdown artifact with these sections:
+Generate a markdown artifact titled after the conversation's subject, with these sections in order. Each needs real extracted content — cut a section only if it's genuinely empty (e.g., no open questions), never leave filler.
+
+- **Summary** — 2-3 sentences on what this conversation accomplished.
+- **Key Decisions** — each choice made, paired with its rationale, not just the choice.
+- **Technical Context** — code snippets, configs, or technical choices that must carry forward verbatim.
+- **Current State** — split into Completed, In Progress, Blocked/Pending.
+- **Open Questions** — unresolved items the next session needs to address.
+- **Files Modified** — every file touched, with a one-line note on what changed.
+- **Continuation Instructions** — specific enough that the next session doesn't have to re-derive what to do first or what to avoid.
+
+## Worked Example
+
+**Conversation:** Debugged a flaky integration test, traced it to a race condition in `src/auth/session.ts`, fixed it with a condition-based wait, started but didn't finish a regression test.
+
+**Generated artifact:**
 
 ```markdown
-# Context Migration: {Brief Title}
+# Context Migration: Auth Session Race Condition Fix
 
 ## Summary
-{2-3 sentence overview of what this conversation accomplished}
+Fixed a flaky integration test caused by a race condition in session token
+refresh. Root cause confirmed; regression test still in progress.
 
 ## Key Decisions
-{Bulleted list of choices made and rationale}
+- Used condition polling (`waitFor`) instead of `sleep()` — the timing
+  wasn't fixed, it depended on token refresh completing.
+- Left retry logic in `session.ts` unchanged — the race was in when the
+  check ran, not the retry mechanism.
 
 ## Technical Context
-{Code snippets, configurations, or technical choices that must carry forward}
+`src/auth/session.ts:42`:
+\`\`\`ts
+await waitFor(() => session.isRefreshed, { timeout: 5000 })
+\`\`\`
 
 ## Current State
-- **Completed:** {what's done}
-- **In Progress:** {what was being worked on}
-- **Blocked/Pending:** {what needs resolution}
+- **Completed:** Root cause identified, fix applied and passing locally.
+- **In Progress:** Regression test in `tests/auth.test.ts` — skeleton
+  written, assertions not yet added.
+- **Blocked/Pending:** None.
 
 ## Open Questions
-{Unresolved items that need attention}
+- Does the same race exist in the mobile client's session refresh path?
 
 ## Files Modified
-{List of files created or changed, with brief notes}
+- `src/auth/session.ts` — added condition-based wait before token read.
+- `tests/auth.test.ts` — regression test skeleton, incomplete.
 
 ## Continuation Instructions
-{Specific guidance for the next session—what to do first, what to avoid}
+Finish the regression test first — confirm it reproduces the old race
+against the pre-fix code before considering this closed. Don't start the
+mobile-client check until the regression test lands.
 ```
 
 ## Constraints

@@ -28,7 +28,7 @@ Complete each phase before moving to the next. Skipping phases is how "quick fix
 - Is it what was expected?
 - Where did it come from?
 
-Continue until you find where correct data becomes incorrect.
+Continue until you find where correct data becomes incorrect. See `references/root-cause-tracing.md` for stack forensics, test-pollution isolation, and cross-environment diffing techniques.
 
 ### Phase 2: Pattern Analysis
 
@@ -88,6 +88,22 @@ Stop and reassess if any of these are happening:
 | Fixing symptoms instead of cause | Applying bandaids — root cause still exists |
 | Increasing timeout/retry values | Masking the real problem |
 | Adding try/catch to suppress errors | Hiding the real problem |
+
+Increasing a timeout is usually a symptom of a race condition — see `references/condition-based-waiting.md` for replacing arbitrary waits with condition polling. For structural prevention once the fix lands, see `references/defense-in-depth.md` on validating at entry points, business logic, and environment boundaries.
+
+## Worked Example
+
+**Bug report:** "Users intermittently see 'Session expired' right after logging in."
+
+**Phase 1 (Investigation):** Full error and stack trace show the session check failing in `middleware/auth.ts:28`. Reproduces roughly 1 in 5 logins, not consistently. `git log --oneline -10` shows a recent change to session-token issuance. Tracing backward from the failure: the middleware reads `session.token` before the login handler's async token-write has resolved.
+
+**Phase 2 (Pattern Analysis):** The password-reset flow does the same token issuance and never fails this way. Diffing the two paths: password-reset awaits the write before redirecting; login redirects immediately after calling the write, without awaiting it.
+
+**Phase 3 (Hypothesis):** "The bug occurs because the login handler redirects before the session-token write resolves, so the middleware sometimes reads a token that isn't there yet." Minimal test: add a delay before the middleware's read — if the failure disappears, the hypothesis holds.
+
+**Phase 4 (Implementation):** Write a failing test that logs in and immediately checks session validity — it fails intermittently, reproducing the bug. Fix: `await` the token write before redirecting in the login handler (a 1-line change at the actual root cause, not the middleware). Re-run the new test — passes consistently across 50 runs. Full suite still green.
+
+No architectural review needed — fixed on the first attempt with a clear cause-and-effect explanation.
 
 ## iter Integration
 

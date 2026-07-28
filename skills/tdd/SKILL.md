@@ -74,6 +74,48 @@ Stop and reassess if:
 - **One assertion per test (taken too far):** Multiple related assertions in one test are fine. "One logical concept per test" is the real rule.
 - **Skipping the RED step:** Writing code and test together means you don't know if the test actually catches failures. Always see red first.
 
+See `references/anti-patterns.md` for patterns that make tests fragile, slow, or useless (mock overuse, flaky tests, snapshot abuse, and others).
+
+## Worked Example
+
+**Task:** Add a `discountFor(cart)` function that applies 10% off orders over $100.
+
+**RED:**
+```ts
+test("applies 10% discount to orders over $100", () => {
+  const cart = { total: 150 }
+  expect(discountFor(cart)).toBe(15)
+})
+```
+Run it. Fails with `discountFor is not defined` — correct failure, the function doesn't exist yet.
+
+**GREEN:**
+```ts
+function discountFor(cart) {
+  return cart.total * 0.1
+}
+```
+Run it. Passes. (Yes, this ignores the "over $100" condition — no test demands it yet.)
+
+**RED again:**
+```ts
+test("applies no discount to orders of $100 or less", () => {
+  const cart = { total: 80 }
+  expect(discountFor(cart)).toBe(0)
+})
+```
+Run it. Fails — current implementation returns 8, not 0.
+
+**GREEN:**
+```ts
+function discountFor(cart) {
+  return cart.total > 100 ? cart.total * 0.1 : 0
+}
+```
+Both tests pass.
+
+**REFACTOR:** Extract the threshold and rate as named constants (`DISCOUNT_THRESHOLD`, `DISCOUNT_RATE`) for readability. Re-run both tests — still green. Structure changed, behavior didn't.
+
 ## iter Integration
 
 iter maps `tdd` to implementation tasks during planning. When dispatched by iter, the agent invokes this skill before starting implementation work.

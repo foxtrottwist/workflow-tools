@@ -95,7 +95,7 @@ Do not add architecture overviews, file descriptions, or general language guidan
 
 Ask: "Are there any domain-specific workflows in this project that an agent would need guidance on? Things like: deployment procedures, API conventions, data pipeline steps, or unusual build processes."
 
-If the user identifies workflows, offer to create skill stubs using the `instruct-dev` skill. If not, skip — don't create skills speculatively.
+If the user identifies workflows, offer to create skill stubs using the `instruction-dev` skill. If not, skip — don't create skills speculatively.
 
 ### Step 7: Source control
 
